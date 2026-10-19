@@ -13,6 +13,9 @@
   --color-brand-accent: #ededd2;
   --color-brand-gray-1: #d8d8d8;
   --color-brand-gray-2: #9a9999;
+
+  /* Darker sage for text on light backgrounds (sage itself is under 2:1 on cream). */
+  --color-brand-primary-dark: color-mix(in srgb, var(--color-brand-primary) 50%, var(--color-brand-secondary)); /* ~#707556 */
 }
 
 /* Typography tokens: generates font-* and text-* utilities (e.g. font-josefin, text-h1). */

@@ -92,8 +92,21 @@ export function HomeSection() {
       epk.home.featuredVideo?.publishedDate || matchingFeaturedVideo?.publishedDate,
   }
 
+  const bannerImage = epk.home.bannerImage
+
   return (
     <section data-section="home">
+      {bannerImage && (
+        <picture data-field="bannerImage">
+          <source media="(min-width: 64rem)" srcSet={bannerImage.src} />
+          <img
+            alt={bannerImage.alt}
+            className="h-[186px] w-full object-cover lg:h-[445px]"
+            src={bannerImage.mobileSrc ?? bannerImage.src}
+            style={{ objectPosition: bannerImage.position }}
+          />
+        </picture>
+      )}
       <div data-section="hero" data-field="featuredRelease">
         <header>
           <h1 data-field="title">{release.title}</h1>

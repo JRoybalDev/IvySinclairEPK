@@ -24,6 +24,7 @@ Every file in `shared/` must follow these rules. ESLint enforces the import rule
 
 | File | What it does | Requires |
 | --- | --- | --- |
+| `Sheet.tsx` | Panel that slides in from the top or bottom over a backdrop; Escape/backdrop close, scroll lock | react |
 | `FallbackImage.tsx` | `<img>` that shows a labelled placeholder when `src` is missing or fails to load | react |
 | `YouTubeEmbed.tsx` | Lazy-loaded YouTube iframe from a URL or video ID | react, `youtube.ts` |
 | `youtube.ts` | `getYouTubeVideoId()`: parses watch, youtu.be, embed, shorts, and live URLs | none |

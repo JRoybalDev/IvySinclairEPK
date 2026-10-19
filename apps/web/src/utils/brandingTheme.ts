@@ -90,22 +90,28 @@ export const getEPKBrandingStyle = (branding: Branding) => {
     ...cssVar('--color-accent', theme?.accent ?? branding.accentColor),
     ...cssVar('--color-accent-hover', theme?.accentStrong),
     ...cssVar('--color-accent-contrast', theme?.foam),
+    ...cssVar('--mobile-nav-background', branding.mobileNavBackground ? cssUrl(branding.mobileNavBackground) : undefined),
   }
   const assignments = branding.fonts?.assignments
+  // Fixed to the viewport, so the sticky header's copy lines up seamlessly with the page behind it.
+  const pageBackground = [
+    'background-color:var(--color-page);',
+    backgroundTexture
+      ? `background-image:${cssUrl(backgroundTexture)};background-position:center top;background-repeat:repeat;background-size:cover;background-attachment:fixed;`
+      : '',
+  ].join('')
   const css = [
     ...(branding.fonts?.googleFonts ?? []).map(googleImport),
     ...(branding.fonts?.uploadedFonts ?? []).map(uploadedFontFace),
     [
       '[data-template="epk-public-shell"]{',
       'min-height:100vh;',
-      'background-color:var(--color-page);',
-      backgroundTexture
-        ? `background-image:${cssUrl(backgroundTexture)};background-position:center top;background-repeat:repeat;background-size:cover;background-attachment:fixed;`
-        : '',
+      pageBackground,
       'color:var(--color-text);',
       'font-family:var(--font-body);',
       '}',
     ].join(''),
+    `[data-template="epk-public-shell"] [data-section="site-header"]{${pageBackground}}`,
     fontRule('', assignments?.body),
     fontRule('h1', assignments?.h1),
     fontRule('h2', assignments?.h2),

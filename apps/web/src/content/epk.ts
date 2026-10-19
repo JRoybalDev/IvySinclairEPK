@@ -22,6 +22,9 @@ export const content = {
     fontStyle: 'script',
     cornerMotif: '/media/branding/corner-motif.svg',
     faviconPath: '/media/branding/favicon.ico',
+    menuOpenIcon: '/media/branding/closedModal.png',
+    menuCloseIcon: '/media/branding/openedModal.png',
+    mobileNavBackground: '/media/branding/mobileNavBackground.jpg',
   },
   nav: [
     'home',
@@ -30,6 +33,13 @@ export const content = {
     'music',
   ],
   home: {
+    bannerImage: {
+      // Cropped from /media/branding/ivy_eyes.png (rows 500-1800 of 4096), eyes sit ~46% down.
+      src: '/media/branding/ivy_eyes_banner.jpg',
+      mobileSrc: '/media/branding/ivy_eyes_banner_mobile.jpg',
+      alt: 'Close-up of Ivy Sinclair in warm window light',
+      position: '50% 46%',
+    },
     featuredRelease: {
       title: 'Midnight Signal',
       subtitle: 'new single out now',

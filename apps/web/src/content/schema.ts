@@ -107,6 +107,9 @@ export const BrandingSchema = z.object({
     fontStyle: z.enum(['serif', 'sans', 'script']).default('sans'), // decorative SVG/image for corners
     cornerMotif: z.string().optional(),
     faviconPath: z.string().optional(),
+    menuOpenIcon: z.string().optional(), // mobile menu button image while the menu is closed (opens it)
+    menuCloseIcon: z.string().optional(), // mobile menu button image while the menu is open (closes it)
+    mobileNavBackground: z.string().optional(), // background image for the mobile menu panel
     theme: BrandingThemeSchema.optional(),
     fonts: BrandingFontsSchema.optional(),
 })
@@ -143,7 +146,15 @@ export const AnnouncementSchema = z.object({
     linkUrl: UrlString.optional(),
     linkLabel: z.string().optional(),
 })
+// Full-width image at the top of /home: 186px tall on mobile, 445px from the lg breakpoint.
+export const HomeBannerImageSchema = z.object({
+    src: z.string(), // desktop image path (wide crop, ~1920px)
+    mobileSrc: z.string().optional(), // smaller crop for phones (~800px); falls back to src
+    alt: z.string().default(''), // empty = decorative
+    position: z.string().optional(), // CSS object-position for the visible slice, e.g. "50% 46%"
+})
 export const HomeSchema = z.object({
+    bannerImage: HomeBannerImageSchema.optional(),
     featuredRelease: FeaturedReleaseSchema,
     showTourDatesOnHome: z.boolean().default(true), // mirrors /tour section on home
     sectionsOnHome: z.array(HomeEmbedSectionKey).default([]), // full sections to also render on home
