@@ -11,11 +11,11 @@ export const content = {
     description: 'Ivy Sinclair blends Pop, and R&B from Los Angeles.',
     socialImage: '/media/assets/social-share.jpg',
     faviconPath: '/media/branding/favicon.ico',
-    themeColor: '#3B1A1A',
+    themeColor: '#353123',
     siteUrl: 'https://example.com',
   },
   branding: {
-    accentColor: '#3B1A1A',
+    accentColor: '#353123',
     backgroundTexture: '/media/branding/background.png',
     // logoImage: '/media/branding/logo.png',
     logoText: 'Ivy Sinclair',
