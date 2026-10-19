@@ -4,8 +4,8 @@ import { epk } from '../content'
 import { useEPKMeta } from '../hooks/useEPKMeta'
 import { getEPKBrandingStyle } from '../utils/brandingTheme'
 import type { EPK } from '../content/schema'
-import { FaMagnifyingGlass } from 'react-icons/fa6'
 import { CgShoppingCart } from 'react-icons/cg'
+import { HiMagnifyingGlass } from 'react-icons/hi2'
 
 const navLabels = {
   home: 'Home',
@@ -23,7 +23,7 @@ const navPaths = {
   home: '/',
   music: '/music',
   videos: '/videos',
-  shop: '/merch',
+  shop: '/shop',
   tour: '/tour',
   vip: '/vip',
   about: '/about',
@@ -85,7 +85,7 @@ export function EPKPage() {
             {epk.branding.logoImage ? (
               <img src={epk.branding.logoImage} alt={epk.artistName} />
             ) : (
-              <span>{epk.branding.logoText || epk.artistName}</span>
+              <span className='lg:text-[64px] md:text-[48px] sm:text-[32px] font-script'>{epk.branding.logoText || epk.artistName}</span>
             )}
           </NavLink>
         </div>
@@ -110,15 +110,15 @@ export function EPKPage() {
             }
 
             return (
-              <NavLink end={item === 'home'} key={item} to={navPaths[item]} className="">
+              <NavLink end={item === 'home'} key={item} to={navPaths[item]} className="text-[18px] font-josefin">
                 {navLabels[item]}
               </NavLink>
             )
           })}
         </nav>
         <div className='flex gap-4'>
-          <FaMagnifyingGlass width={24} height={24}/>
-          <CgShoppingCart width={24} height={24}/>
+          <HiMagnifyingGlass className='w-6 h-6'/>
+          <CgShoppingCart className='w-6 h-6'/>
         </div>
       </header>
       <Outlet context={{ epk }} />
