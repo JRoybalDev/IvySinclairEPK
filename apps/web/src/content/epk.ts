@@ -4,11 +4,11 @@ import type { EPKInput } from './schema'
 // fields and flags typos as you edit. Fields with schema defaults can be omitted.
 // See README.md in this folder for the field reference.
 export const content = {
-  artistName: 'Demo Artist',
-  pageTitle: 'Demo Artist | Official Site',
+  artistName: 'Ivy Sinclair',
+  pageTitle: 'Ivy Sinclair | Official Site',
   metadata: {
-    title: 'Demo Artist | Official EPK',
-    description: 'Demo Artist blends alt-soul, left-field pop, and cinematic R&B from Los Angeles.',
+    title: 'Ivy Sinclair | Official EPK',
+    description: 'Ivy Sinclair blends Pop, and R&B from Los Angeles.',
     socialImage: '/media/assets/social-share.jpg',
     faviconPath: '/media/branding/favicon.ico',
     themeColor: '#3B1A1A',
@@ -16,22 +16,18 @@ export const content = {
   },
   branding: {
     accentColor: '#3B1A1A',
-    backgroundTexture: '/media/branding/linen-texture.jpg',
-    logoImage: '/media/branding/logo.png',
-    logoText: 'Demo Artist',
+    backgroundTexture: '/media/branding/background.png',
+    // logoImage: '/media/branding/logo.png',
+    logoText: 'Ivy Sinclair',
     fontStyle: 'script',
     cornerMotif: '/media/branding/corner-motif.svg',
     faviconPath: '/media/branding/favicon.ico',
   },
   nav: [
     'home',
-    'music',
-    'videos',
-    'tour',
-    'vip',
     'shop',
     'about',
-    'newsletter',
+    'music',
   ],
   home: {
     featuredRelease: {
@@ -87,7 +83,7 @@ export const content = {
   videos: [
     {
       id: 'video-001',
-      title: 'Demo Artist - Midnight Signal',
+      title: 'Ivy Sinclair - Midnight Signal',
       youtubeVideoId: 'dQw4w9WgXcQ',
       channelName: 'DemoArtistVEVO',
       type: 'music_video',
@@ -97,9 +93,9 @@ export const content = {
     },
     {
       id: 'video-002',
-      title: 'Demo Artist - Live from Los Angeles',
+      title: 'Ivy Sinclair - Live from Los Angeles',
       youtubeVideoId: 'ysz5S6PUM-U',
-      channelName: 'Demo Artist',
+      channelName: 'Ivy Sinclair',
       type: 'live',
       publishedDate: '2025-12-12',
       isFeatured: false,
@@ -153,7 +149,7 @@ export const content = {
     ],
     notifyCta: {
       text: 'Get notified when new dates are announced near you.',
-      buttonLabel: 'Follow Demo Artist',
+      buttonLabel: 'Follow Ivy Sinclair',
       buttonUrl: 'https://example.com/follow',
     },
     seatedWidgetUrl: 'https://example.com/widgets/tour',
@@ -219,8 +215,8 @@ export const content = {
     redirectOnly: false,
   },
   about: {
-    shortBio: 'Demo Artist blends alt-soul, left-field pop, and cinematic R&B from Los Angeles.',
-    longBio: 'Demo Artist is a Los Angeles-based performer and songwriter building immersive worlds around intimate songs. Their work pairs rich vocal arrangements with textural production, creating a live show built for clubs, festivals, and theater rooms alike.',
+    shortBio: 'Ivy Sinclair blends alt-soul, left-field pop, and cinematic R&B from Los Angeles.',
+    longBio: 'Ivy Sinclair is a Los Angeles-based performer and songwriter building immersive worlds around intimate songs. Their work pairs rich vocal arrangements with textural production, creating a live show built for clubs, festivals, and theater rooms alike.',
     genres: ['Alt-Soul', 'R&B', 'Indie Pop'],
     similarArtists: ['Artist Reference One', 'Artist Reference Two'],
     accolades: [
@@ -283,7 +279,7 @@ export const content = {
       appleMusic: 'https://music.apple.com',
       website: 'https://example.com',
     },
-    copyrightName: 'Demo Artist',
+    copyrightName: 'Ivy Sinclair',
     legalLinks: [
       {
         label: 'Privacy Policy',

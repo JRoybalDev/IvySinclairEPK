@@ -4,15 +4,17 @@ import { epk } from '../content'
 import { useEPKMeta } from '../hooks/useEPKMeta'
 import { getEPKBrandingStyle } from '../utils/brandingTheme'
 import type { EPK } from '../content/schema'
+import { FaMagnifyingGlass } from 'react-icons/fa6'
+import { CgShoppingCart } from 'react-icons/cg'
 
 const navLabels = {
   home: 'Home',
   music: 'Music',
   videos: 'Videos',
-  shop: 'Shop',
+  shop: 'Merch',
   tour: 'Tour',
   vip: 'VIP',
-  about: 'About',
+  about: 'About Me',
   newsletter: 'Newsletter',
   contact: 'Contact',
 } as const
@@ -21,7 +23,7 @@ const navPaths = {
   home: '/',
   music: '/music',
   videos: '/videos',
-  shop: '/shop',
+  shop: '/merch',
   tour: '/tour',
   vip: '/vip',
   about: '/about',
@@ -32,7 +34,7 @@ const pageLabelsByPath = {
   '/': 'Home',
   '/music': 'Music',
   '/videos': 'Videos',
-  '/shop': 'Shop',
+  '/shop': 'Merch',
   '/tour': 'Tour',
   '/vip': 'VIP',
   '/about': 'About',
@@ -77,7 +79,7 @@ export function EPKPage() {
   return (
     <main data-template="epk-public-shell" style={brandingStyle.variables}>
       {brandingStyle.css && <style>{brandingStyle.css}</style>}
-      <header data-section="site-header">
+      <header data-section="site-header" className='flex justify-between page-shell h-24 items-center'>
         <div data-field="branding">
           <NavLink to="/" aria-label={`${epk.artistName} home`}>
             {epk.branding.logoImage ? (
@@ -87,7 +89,7 @@ export function EPKPage() {
             )}
           </NavLink>
         </div>
-        <nav aria-label="Public EPK sections" data-section="site-navigation">
+        <nav aria-label="Public EPK sections" data-section="site-navigation" className='flex gap-18'>
           {epk.nav.filter((item) => isConfiguredNavItem(epk, item)).map((item) => {
             const externalNavUrl = getExternalNavUrl(epk, item)
 
@@ -108,12 +110,16 @@ export function EPKPage() {
             }
 
             return (
-              <NavLink end={item === 'home'} key={item} to={navPaths[item]}>
+              <NavLink end={item === 'home'} key={item} to={navPaths[item]} className="">
                 {navLabels[item]}
               </NavLink>
             )
           })}
         </nav>
+        <div className='flex gap-4'>
+          <FaMagnifyingGlass width={24} height={24}/>
+          <CgShoppingCart width={24} height={24}/>
+        </div>
       </header>
       <Outlet context={{ epk }} />
       <SiteFooter epk={epk} />
