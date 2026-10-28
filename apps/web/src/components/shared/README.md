@@ -24,6 +24,8 @@ Every file in `shared/` must follow these rules. ESLint enforces the import rule
 
 | File | What it does | Requires |
 | --- | --- | --- |
+| `Button.tsx` | Site-wide button: `<button>` or `<a>` (with `href`), variants, sizes, shapes, colors, icons, loading state | react, `buttonStyles.ts` |
+| `buttonStyles.ts` | `getButtonProps()`: the Button look as `className` + `style`, for router links and other elements; themeable via `--button-color` / `--button-contrast` | none |
 | `Sheet.tsx` | Panel that slides in from the top or bottom over a backdrop; Escape/backdrop close, scroll lock | react |
 | `FallbackImage.tsx` | `<img>` that shows a labelled placeholder when `src` is missing or fails to load | react |
 | `YouTubeEmbed.tsx` | Lazy-loaded YouTube iframe from a URL or video ID | react, `youtube.ts` |

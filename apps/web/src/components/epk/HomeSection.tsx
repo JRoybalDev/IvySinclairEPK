@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useEPKOutlet } from '../../hooks/useEPKOutlet'
 import { AboutSection } from './AboutSection'
+import { Button } from '../shared/Button'
+import { getButtonProps } from '../shared/buttonStyles'
 import { FallbackImage } from '../shared/FallbackImage'
 import { MusicGrid } from './MusicGrid'
 import { NewsletterSection } from './NewsletterSection'
@@ -42,6 +44,26 @@ const renderHomeSection = (section: HomeSectionKey) => {
     default:
       return null
   }
+}
+
+// Cream button over the dark banner scrim on desktop; the site default (dark) where the copy stacks below.
+const bannerButtonClassName =
+  'mt-2 self-start tracking-wider lg:[--button-color:var(--color-brand-accent)] lg:[--button-contrast:var(--color-brand-secondary)] type-body'
+
+function HomeBannerButton({ label, url }: { label: string; url: string }) {
+  if (url.startsWith('/')) {
+    return (
+      <Link {...getButtonProps({ shape: 'pill', className: bannerButtonClassName })} to={url}>
+        {label}
+      </Link>
+    )
+  }
+
+  return (
+    <Button className={bannerButtonClassName} external href={url} shape="pill">
+      {label}
+    </Button>
+  )
 }
 
 function HomeContactSection() {
@@ -93,19 +115,40 @@ export function HomeSection() {
   }
 
   const bannerImage = epk.home.bannerImage
+  const bannerContent = epk.home.bannerContent
 
   return (
     <section data-section="home">
       {bannerImage && (
-        <picture data-field="bannerImage">
-          <source media="(min-width: 64rem)" srcSet={bannerImage.src} />
-          <img
-            alt={bannerImage.alt}
-            className="h-[186px] w-full object-cover lg:h-[445px]"
-            src={bannerImage.mobileSrc ?? bannerImage.src}
-            style={{ objectPosition: bannerImage.position }}
-          />
-        </picture>
+        <div data-section="banner" className="relative">
+          <picture data-field="bannerImage">
+            <source media="(min-width: 64rem)" srcSet={bannerImage.src} />
+            <img
+              alt={bannerImage.alt}
+              className="h-46.5 w-full object-cover lg:h-111.25"
+              src={bannerImage.mobileSrc ?? bannerImage.src}
+              style={{ objectPosition: bannerImage.position }}
+            />
+          </picture>
+          {bannerContent && (
+            <div
+              data-field="bannerContent"
+              className="lg:absolute lg:inset-0 lg:flex lg:items-center lg:bg-linear-to-r lg:from-black/70 lg:via-black/35 lg:to-transparent"
+            >
+              <div className="page-shell py-8 lg:py-0">
+                <div className="flex max-w-lg flex-col gap-3 lg:text-brand-accent">
+                  <h2 className="type-h2 lg:type-h1 font-bold" data-field="title">{bannerContent.title}</h2>
+                  {bannerContent.paragraphs.map((paragraph) => (
+                    <p className="type-body font-josefin" key={paragraph}>{paragraph}</p>
+                  ))}
+                  {bannerContent.button && (
+                    <HomeBannerButton label={bannerContent.button.label} url={bannerContent.button.url}/>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       )}
       <div data-section="hero" data-field="featuredRelease">
         <header>

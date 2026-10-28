@@ -153,8 +153,18 @@ export const HomeBannerImageSchema = z.object({
     alt: z.string().default(''), // empty = decorative
     position: z.string().optional(), // CSS object-position for the visible slice, e.g. "50% 46%"
 })
+// Copy laid over the left-center of the banner on desktop; stacks under the banner on smaller screens.
+export const HomeBannerContentSchema = z.object({
+    title: z.string(),
+    paragraphs: z.array(z.string()).max(2).default([]), // up to two short paragraphs
+    button: z.object({
+        label: z.string(),
+        url: z.string(), // "/music" for an on-site page, or a full https:// URL
+    }).optional(),
+})
 export const HomeSchema = z.object({
     bannerImage: HomeBannerImageSchema.optional(),
+    bannerContent: HomeBannerContentSchema.optional(),
     featuredRelease: FeaturedReleaseSchema,
     showTourDatesOnHome: z.boolean().default(true), // mirrors /tour section on home
     sectionsOnHome: z.array(HomeEmbedSectionKey).default([]), // full sections to also render on home

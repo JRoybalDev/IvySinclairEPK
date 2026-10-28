@@ -40,6 +40,14 @@ export const content = {
       alt: 'Close-up of Ivy Sinclair in warm window light',
       position: '50% 46%',
     },
+    bannerContent: {
+      title: 'Pop, RnB Singer & Songwriter',
+      paragraphs: [
+        'Ivy is a top charted Singer/Songwriter. Her work over the past 5 years has amassed a huge following, and allowed her to chart multiple times.',
+        'Discover what everone loves about her!',
+      ],
+      button: { label: 'About Ivy', url: '/about' },
+    },
     featuredRelease: {
       title: 'Midnight Signal',
       subtitle: 'new single out now',

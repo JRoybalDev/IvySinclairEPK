@@ -29,7 +29,7 @@
   --font-body:
     "Josefin Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
-  --font-heading: "Iansui", var(--font-body);
+  --font-heading: "Just Me Again Down Here", cursive;
   --font-mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
 
   --color-page: var(--bg);
