@@ -142,13 +142,42 @@ export const BrandingSchema = z.object({
 })
 
 // ─── Metadata / Social Sharing ───────────────────────────
+// Per-page search and share text. Leave a page out to fall back to "<artist> | <Page>" and the site description.
+export const PageMetaSchema = z.object({
+    title: z.string().optional(), // full browser/search title, e.g. "Tour Dates | Ivy Sinclair"
+    description: z.string().optional(), // ~150 characters for search results and link previews
+    image: z.string().optional(), // share image for this page
+    noIndex: z.boolean().default(false), // keep the page out of search results (cart, checkout...)
+})
 export const MetadataSchema = z.object({
-    title: z.string().optional(),
-    description: z.string().optional(),
-    socialImage: z.string().optional(),
+    title: z.string().optional(), // default title, used for the home page
+    description: z.string().optional(), // default description
+    socialImage: z.string().optional(), // default share image, 1200x630
+    socialImageAlt: z.string().optional(),
     faviconPath: z.string().optional(),
+    appleTouchIcon: z.string().optional(), // 180x180 PNG
+    manifestIcons: z.array(z.object({ src: z.string(), sizes: z.string() })).default([]), // PNG icons for site.webmanifest
     themeColor: z.string().optional(),
-    siteUrl: z.string().optional(),
+    // Production URL with no trailing slash, e.g. "https://ivysinclair.com". Used for canonical links,
+    // absolute share-image URLs and the sitemap. On Vercel it falls back to the production domain.
+    siteUrl: UrlString.optional(),
+    locale: z.string().default('en_US'),
+    keywords: z.array(z.string()).optional(),
+    pages: z.object({
+        home: PageMetaSchema.optional(),
+        music: PageMetaSchema.optional(),
+        tour: PageMetaSchema.optional(),
+        merch: PageMetaSchema.optional(),
+        product: PageMetaSchema.optional(), // template for /merch/<slug>; "{name}" is replaced with the product name
+        about: PageMetaSchema.optional(),
+        videos: PageMetaSchema.optional(),
+        vip: PageMetaSchema.optional(),
+        newsletter: PageMetaSchema.optional(),
+        aiDisclaimer: PageMetaSchema.optional(),
+        cart: PageMetaSchema.optional(),
+        checkout: PageMetaSchema.optional(),
+        confirmation: PageMetaSchema.optional(),
+    }).default({}),
 })
 
 // ─── Home ─────────────────────────────────────────────────
@@ -258,6 +287,8 @@ export const MusicSpotlightSchema = z.object({
     title: z.string(),
     coverImage: z.string(),
     coverAlt: z.string().default(''),
+    backgroundImage: z.string().optional(), // texture or photo behind the hero
+    backgroundTint: z.number().min(0).max(1).default(0.4), // strength of the dark ink tint over backgroundImage
     status: SpotlightStatusKey.default('auto'),
     premiereAt: z.string(), // ISO date-time
     comingSoon: z.object({
@@ -617,10 +648,22 @@ export const FooterSchema = z.object({
     bookingLabel: z.string().default('Booking & press:'), // shown before contact.bookingEmail
     legalLinks: z.array(z.object({
         label: z.string(), // e.g. Privacy Policy
-        url: UrlString,
+        url: LinkString, // on-site path ("/ai-disclaimer") or full URL
     })).optional(),
     poweredByLabel: z.string().optional(), // e.g. Seated
     poweredByUrl: UrlString.optional(),
+})
+
+// ─── AI Disclaimer ─────────────────────────────────────────
+// /ai-disclaimer: what on the site was made with AI and what wasn't.
+export const AIDisclaimerSchema = z.object({
+    title: z.string(),
+    intro: z.array(z.string()), // opening paragraphs
+    madeWithAI: z.object({ title: z.string(), items: z.array(z.string()) }),
+    madeWithoutAI: z.object({ title: z.string(), items: z.array(z.string()) }),
+    closing: z.array(z.string()).default([]),
+    contactLabel: z.string().optional(), // e.g. "Questions? Email" (followed by contact.bookingEmail)
+    lastUpdated: z.string().optional(), // ISO date
 })
 
 // ─── Contact (press/booking only — not public-facing page) ─
@@ -651,6 +694,7 @@ export const EPKSchema = z.object({
 
     footer: FooterSchema,
     contact: ContactSchema,
+    aiDisclaimer: AIDisclaimerSchema.optional(),
 })
 
 export type ValidationIssue = {
@@ -717,6 +761,9 @@ export type VIP = z.infer<typeof VIPSchema>
 export type Shop = z.infer<typeof ShopSchema>
 
 export type About = z.infer<typeof AboutSchema>
+export type PageMeta = z.infer<typeof PageMetaSchema>
+export type AIDisclaimer = z.infer<typeof AIDisclaimerSchema>
+export type Metadata = z.infer<typeof MetadataSchema>
 export type Cta = z.infer<typeof CtaSchema>
 export type StreamingPlatform = z.infer<typeof StreamingPlatformKey>
 export type PlatformLink = z.infer<typeof PlatformLinkSchema>

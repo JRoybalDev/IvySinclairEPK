@@ -34,24 +34,6 @@ const navPaths = {
   newsletter: '/newsletter',
 } as const
 
-const pageLabelsByPath = {
-  '/': 'Home',
-  '/music': 'Music',
-  '/videos': 'Videos',
-  '/merch': 'Merch',
-  '/cart': 'Cart',
-  '/checkout': 'Checkout',
-  '/confirmation': 'Order Confirmed',
-  '/tour': 'Tour',
-  '/vip': 'VIP',
-  '/about': 'About',
-  '/newsletter': 'Newsletter',
-} as const
-
-const getPageLabel = (pathname: string) =>
-  pageLabelsByPath[pathname as keyof typeof pageLabelsByPath] ??
-  (pathname.startsWith('/merch/') ? 'Merch' : 'Page')
-
 const isConfiguredNavItem = (epk: EPK, item: EPK['nav'][number]) => {
   switch (item) {
     case 'vip':
@@ -123,7 +105,7 @@ function useScrollRestoration() {
 
 export function EPKPage() {
   const location = useLocation()
-  useEPKMeta(epk, getPageLabel(location.pathname))
+  useEPKMeta(epk, location.pathname)
   useScrollRestoration()
 
   const [menuOpen, setMenuOpen] = useState(false)

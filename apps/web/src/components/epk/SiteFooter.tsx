@@ -108,7 +108,7 @@ export function SiteFooter({ epk, navItems }: { epk: EPK; navItems: FooterNavIte
           {footer.legalLinks && footer.legalLinks.length > 0 && (
             <ul className="flex gap-4">
               {footer.legalLinks.map((link) => (
-                <li key={link.url}><a className="hover:text-brand-accent" href={link.url}>{link.label}</a></li>
+                <li key={link.url}><SmartLink className="hover:text-brand-accent" to={link.url}>{link.label}</SmartLink></li>
               ))}
             </ul>
           )}

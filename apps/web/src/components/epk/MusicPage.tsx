@@ -19,19 +19,30 @@ function Spotlight({ spotlight }: { spotlight: MusicSpotlight }) {
   const copy = outNow ? spotlight.outNow : spotlight.comingSoon
 
   return (
-    <section aria-labelledby="spotlight-title" className="bg-brand-secondary text-brand-accent">
+    <section
+      aria-labelledby="spotlight-title"
+      className="relative isolate bg-brand-secondary bg-cover bg-center text-brand-accent"
+      style={spotlight.backgroundImage ? { backgroundImage: `url("${spotlight.backgroundImage}")` } : undefined}
+    >
+      {spotlight.backgroundImage && (
+        <div aria-hidden className="absolute inset-0 -z-10 bg-brand-secondary" style={{ opacity: spotlight.backgroundTint }} />
+      )}
       <div className="page-shell grid items-center gap-10 py-14 md:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)] lg:gap-14 lg:py-20">
         <img alt={spotlight.coverAlt} className="aspect-square w-full rounded-2xl object-cover shadow-2xl" fetchPriority="high" src={spotlight.coverImage} />
         <div>
-          <p className="inline-flex items-center gap-2 rounded-full border border-brand-accent/30 bg-brand-accent/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.14em]">
-            <span aria-hidden className={`h-2 w-2 rounded-full ${outNow ? 'bg-[#1DB954]' : 'bg-brand-primary'}`} />
-            {copy.badge}
-          </p>
-          <h1 className="mt-5 font-script text-[68px] leading-none sm:text-[88px]" id="spotlight-title">{spotlight.title}</h1>
+          {/* Out Now gets a plain eyebrow; before the premiere the label heads the countdown box instead. */}
+          {outNow && (
+            <p className="mb-5 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-primary">
+              <span aria-hidden className="h-2 w-2 rounded-full bg-[#1DB954]" />
+              {copy.badge}
+            </p>
+          )}
+          <h1 className="font-script text-[68px] leading-none sm:text-[88px]" id="spotlight-title">{spotlight.title}</h1>
           <p className="mt-4 max-w-xl text-[17px] text-brand-accent/85">{copy.text}</p>
           {!outNow && (
-            <div className="mt-7 rounded-2xl border border-brand-accent/20 bg-brand-accent/5 px-5 py-5">
-              <Countdown className="text-[40px] sm:text-[52px]" labelClassName="text-xs text-brand-accent/70" target={spotlight.premiereAt} />
+            <div className="mt-7 rounded-2xl border border-brand-accent/20 bg-brand-accent/5 px-5 py-5 text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-accent/70">{copy.badge}</p>
+              <Countdown className="mt-2 text-[40px] sm:text-[52px]" labelClassName="text-xs text-brand-accent/70" target={spotlight.premiereAt} />
             </div>
           )}
           <div className="mt-7 flex flex-wrap items-center gap-3">
@@ -57,10 +68,11 @@ function VideoCard({ video, featured = false }: { video: Video; featured?: boole
       </span>
     </div>
   )
+  // Title with the video type as a plain meta line below, like the Discography cards.
   const label = (
-    <div className="mt-3 flex flex-wrap items-center gap-2.5">
+    <div className="mt-3">
       <h3 className={featured ? 'text-xl font-semibold' : 'text-[15px] font-semibold'}>{video.title}</h3>
-      {video.tag && <span className="rounded-full bg-brand-secondary/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-primary-dark">{video.tag}</span>}
+      {video.tag && <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-primary-dark">{video.tag}</p>}
     </div>
   )
 

@@ -2,6 +2,7 @@ import './App.css'
 
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom'
 import { AboutSection } from './components/epk/AboutSection'
+import { AIDisclaimerPage } from './components/epk/AIDisclaimerPage'
 import { CartPage } from './components/epk/CartPage'
 import { CheckoutPage } from './components/epk/CheckoutPage'
 import { ConfirmationPage } from './components/epk/ConfirmationPage'
@@ -34,8 +35,9 @@ function App() {
           <Route path="confirmation" element={<ConfirmationPage />} />
           <Route path="about" element={<AboutSection />} />
           <Route path="newsletter" element={<NewsletterSection />} />
+          <Route path="ai-disclaimer" element={<AIDisclaimerPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
-        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   )

@@ -9,13 +9,53 @@ import type { EPKInput } from './schema'
 export const content = {
   artistName: 'Ivy Sinclair',
   pageTitle: 'Ivy Sinclair | Official Site',
+  // Search results, link previews, favicon. Page titles fall back to "<artist> | <Page>".
   metadata: {
-    title: 'Ivy Sinclair | Official EPK',
-    description: 'Ivy Sinclair is a pop and R&B singer-songwriter from Los Angeles.',
-    socialImage: '/media/assets/ivy-portrait.jpg',
-    faviconPath: '/media/branding/favicon.ico',
+    title: 'Ivy Sinclair | Pop & R&B Singer-Songwriter',
+    description: 'Official site of Ivy Sinclair, a pop and R&B singer-songwriter from Los Angeles. Stream “Midnight Signal,” see tour dates, and shop merch.',
+    socialImage: '/media/branding/og-image.jpg',
+    socialImageAlt: 'Ivy Sinclair, pop and R&B singer-songwriter',
+    faviconPath: '/favicon.ico',
+    appleTouchIcon: '/apple-touch-icon.png',
+    manifestIcons: [
+      { src: '/icon-192.png', sizes: '192x192' },
+      { src: '/icon-512.png', sizes: '512x512' },
+    ],
     themeColor: '#353123',
-    siteUrl: 'https://example.com',
+    // Set to the production domain (no trailing slash) once it's known, e.g. 'https://ivysinclair.com'.
+    // siteUrl: 'https://ivysinclair.com',
+    locale: 'en_US',
+    keywords: ['Ivy Sinclair', 'pop', 'R&B', 'singer-songwriter', 'Los Angeles', 'Midnight Signal'],
+    pages: {
+      music: {
+        title: 'Music | Ivy Sinclair',
+        description: 'Stream Ivy Sinclair’s new single “Midnight Signal,” browse the discography, and watch the latest music videos.',
+      },
+      tour: {
+        title: 'Tour Dates | Ivy Sinclair',
+        description: 'The Midnight Signal Tour: Ivy Sinclair live across North America. Find a show near you and get tickets.',
+        image: '/media/assets/tour-hero.jpg',
+      },
+      merch: {
+        title: 'Merch | Ivy Sinclair',
+        description: 'Official Ivy Sinclair merch: sweaters, tees, vinyl and stickers, made in small batches.',
+      },
+      product: {
+        title: '{name} | Ivy Sinclair Merch',
+      },
+      about: {
+        title: 'About | Ivy Sinclair',
+        description: 'Meet Ivy Sinclair, the Los Angeles singer-songwriter behind honest, diary-like pop and R&B.',
+        image: '/media/assets/ivy-portrait.jpg',
+      },
+      aiDisclaimer: {
+        title: 'AI Disclaimer | Ivy Sinclair',
+        description: 'Which images and content on this site were created with AI, and which were made without it.',
+      },
+      cart: { title: 'Cart | Ivy Sinclair', noIndex: true },
+      checkout: { title: 'Checkout | Ivy Sinclair', noIndex: true },
+      confirmation: { title: 'Order Confirmed | Ivy Sinclair', noIndex: true },
+    },
   },
   branding: {
     accentColor: '#353123',
@@ -27,7 +67,6 @@ export const content = {
     cornerMotif: '/media/branding/corner.png',
     logoText: 'Ivy Sinclair',
     fontStyle: 'script',
-    faviconPath: '/media/branding/favicon.ico',
     menuOpenIcon: '/media/branding/closedModal.png',
     menuCloseIcon: '/media/branding/openedModal.png',
     mobileNavBackground: '/media/branding/mobileNavBackground.jpg',
@@ -89,7 +128,6 @@ export const content = {
     tourSection: {
       title: 'Tour Dates',
       note: 'More dates coming soon. Join the list below to hear first.',
-      limit: 2,
     },
     signup: {
       title: 'Join the inner circle',
@@ -110,6 +148,9 @@ export const content = {
       title: 'Midnight Signal',
       coverImage: '/media/assets/releases/midnight-signal.jpg',
       coverAlt: 'Midnight Signal cover art',
+      // The ink-tinted leaf texture (same as the footer), darkened further by backgroundTint.
+      backgroundImage: '/media/branding/footer-ink.jpg',
+      backgroundTint: 0.4,
       // 'auto' shows the Coming Soon version until premiereAt, then switches to Out Now.
       status: 'auto',
       premiereAt: '2026-12-04T16:00:00Z',
@@ -376,7 +417,7 @@ export const content = {
     page: {
       hero: {
         image: {
-          src: '/media/assets/videos/golden-hour.jpg',
+          src: '/media/assets/tour-hero.jpg',
           alt: 'Silhouette of a singer on stage in front of a crowd holding up phone lights',
           position: 'center',
         },
@@ -624,6 +665,9 @@ export const content = {
     },
     copyrightName: 'Ivy Sinclair',
     copyrightYear: 2026,
+    legalLinks: [
+      { label: 'AI Disclaimer', url: '/ai-disclaimer' },
+    ],
     tagline: 'Pop & R&B singer-songwriter. Deep lyrics, sugar-coated.',
     listen: {
       title: 'Listen',
@@ -639,6 +683,36 @@ export const content = {
       placeholder: 'Email',
       buttonLabel: 'Submit',
     },
+  },
+  // /ai-disclaimer. Keep both lists accurate as the site's assets change.
+  aiDisclaimer: {
+    title: 'AI Disclaimer',
+    intro: [
+      'Ivy Sinclair is a fictional artist, and this website is a demo. Every image of Ivy on this site was created with generative AI. She is not a real person, and her likeness is not based on, and is not intended to resemble, any real person, living or dead.',
+      'We want to be clear about where AI was used, so here is what was made with AI and what was made without it.',
+    ],
+    madeWithAI: {
+      title: 'Made with AI',
+      items: [
+        'All photographs of Ivy Sinclair, including the home page banner, the About page portrait and the link-preview image.',
+        'Cover art for every release: Midnight Signal, City Lights, Paper Hearts and Bedroom Tapes.',
+        'Thumbnails for all eight music videos.',
+        'Parts of the website’s code and some page text were drafted with AI assistance, then reviewed and edited by our team.',
+      ],
+    },
+    madeWithoutAI: {
+      title: 'Made without AI',
+      items: [
+        'The visual identity and page designs, created by our designer in Figma.',
+        'The color palette, layout and typography (Josefin Sans and Just Me Again Down Here, from Google Fonts).',
+        'The concert photo at the top of the Tour page, which is licensed stock photography.',
+      ],
+    },
+    closing: [
+      'Ivy’s songs, releases, tour dates and merch shown here are placeholders for demonstration. No real music, tickets or products are being sold.',
+    ],
+    contactLabel: 'Questions about this page? Email',
+    lastUpdated: '2026-11-16',
   },
   contact: {
     bookingEmail: 'booking@example.com',

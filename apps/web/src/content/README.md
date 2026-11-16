@@ -93,20 +93,33 @@ newsletter
 
 ### Metadata
 
-Stores browser and social sharing metadata fields.
+Search results, link previews, favicon and app icons.
 
 ```json
 {
-  "title": "Demo Artist | Official EPK",
-  "description": "Short share description for search and social previews.",
-  "socialImage": "/media/assets/social-share.jpg",
-  "faviconPath": "/media/branding/favicon.ico",
+  "title": "Demo Artist | Official Site",
+  "description": "Default description for search results and link previews (~150 characters).",
+  "socialImage": "/media/branding/og-image.jpg",
+  "socialImageAlt": "Demo Artist on stage",
+  "faviconPath": "/favicon.ico",
+  "appleTouchIcon": "/apple-touch-icon.png",
+  "manifestIcons": [{ "src": "/icon-192.png", "sizes": "192x192" }, { "src": "/icon-512.png", "sizes": "512x512" }],
   "themeColor": "#3B1A1A",
-  "siteUrl": "https://example.com"
+  "siteUrl": "https://example.com",
+  "locale": "en_US",
+  "keywords": ["Demo Artist", "indie pop"],
+  "pages": {
+    "tour": { "title": "Tour Dates | Demo Artist", "description": "...", "image": "/media/tour.jpg" },
+    "product": { "title": "{name} | Demo Artist Merch" },
+    "checkout": { "noIndex": true }
+  }
 }
 ```
 
-The routed public pages currently set document and Open Graph titles from `<artistName> | <page>`. `metadata.title` and `pageTitle` are retained in the EPK data for custom use.
+- `title`/`description` are the home page's; other pages use `pages.<page>` or fall back to `<artist> | <Page>`.
+- Product pages use the product's own description and image; `{name}` in `pages.product.title` is the product name.
+- `siteUrl` enables canonical links, absolute share-image URLs and `sitemap.xml`. On Vercel it falls back to the production domain.
+- The build (`vite.config.ts`) writes the home page's tags, JSON-LD (artist + tour dates), `robots.txt`, `sitemap.xml` and `site.webmanifest` into `dist`; the app updates tags per route in the browser.
 
 ### Branding
 
