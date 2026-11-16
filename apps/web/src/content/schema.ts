@@ -20,6 +20,30 @@ export const DateDisplayFormatKey = z.enum([
 export const TourListingModeKey = z.enum(['manual', 'seated'])
 export const ShopItemCategoryKey = z.enum(['clothing', 'music', 'other'])
 export const ClothingSizeKey = z.enum(['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'])
+// On-site path ("/merch") or a full https:// URL.
+const LinkString = z.string()
+export const CtaStyleKey = z.enum(['solid', 'outline', 'light'])
+export const CtaSchema = z.object({
+    label: z.string(),
+    url: LinkString,
+    style: CtaStyleKey.default('solid'), // solid = ink pill, outline = bordered, light = cream pill (for dark backgrounds)
+})
+export const StreamingPlatformKey = z.enum([
+    'spotify', 'appleMusic', 'youtubeMusic', 'youtube', 'soundcloud', 'tidal', 'deezer', 'amazonMusic', 'bandcamp',
+])
+export const PlatformLinkSchema = z.object({
+    platform: StreamingPlatformKey,
+    label: z.string().optional(), // button text, e.g. "Presave on Spotify"; defaults to the platform name
+    url: UrlString,
+})
+// Demo signup card. Nothing is sent anywhere: submitting only shows successMessage.
+export const SignupSchema = z.object({
+    title: z.string(),
+    text: z.string().optional(),
+    placeholder: z.string().default('Your email address'),
+    buttonLabel: z.string().default('Join'),
+    successMessage: z.string().default('Thanks! You’re on the list.'),
+})
 const normalizeShopItemCategory = (value: unknown) => {
     if (typeof value !== 'string') return value
 
@@ -110,6 +134,9 @@ export const BrandingSchema = z.object({
     menuOpenIcon: z.string().optional(), // mobile menu button image while the menu is closed (opens it)
     menuCloseIcon: z.string().optional(), // mobile menu button image while the menu is open (closes it)
     mobileNavBackground: z.string().optional(), // background image for the mobile menu panel
+    footerTexture: z.string().optional(), // background image for the footer (e.g. a darker tint of the page texture)
+    dividerImage: z.string().optional(), // ornament beside section titles; mirrored on the right
+    navCta: CtaSchema.optional(), // button in the mobile menu, e.g. "Listen Now"
     theme: BrandingThemeSchema.optional(),
     fonts: BrandingFontsSchema.optional(),
 })
@@ -133,6 +160,13 @@ export const FeaturedReleaseSchema = z.object({
         coverImage: z.string(), // uploaded image path
         smartLinkUrl: UrlString.optional(), // lnk.to or similar aggregator
         directStreamUrl: UrlString.optional(), // fallback direct stream link
+        description: z.string().optional(),
+        // Live countdown under the description, e.g. to a video premiere.
+        countdown: z.object({
+            label: z.string(), // e.g. "Video premieres Friday, Dec 4 · 8:00 AM PST"
+            target: z.string(), // ISO date-time, e.g. "2026-12-04T16:00:00Z"
+        }).optional(),
+        links: z.array(PlatformLinkSchema).default([]), // streaming pills
 })
 export const FeaturedVideoSchema = z.object({
     url: UrlString,
@@ -143,7 +177,7 @@ export const FeaturedVideoSchema = z.object({
 })
 export const AnnouncementSchema = z.object({
     text: z.string(),
-    linkUrl: UrlString.optional(),
+    linkUrl: LinkString.optional(),
     linkLabel: z.string().optional(),
 })
 // Full-width image at the top of /home: 186px tall on mobile, 445px from the lg breakpoint.
@@ -155,12 +189,10 @@ export const HomeBannerImageSchema = z.object({
 })
 // Copy laid over the left-center of the banner on desktop; stacks under the banner on smaller screens.
 export const HomeBannerContentSchema = z.object({
+    eyebrow: z.string().optional(), // small caps line above the title
     title: z.string(),
     paragraphs: z.array(z.string()).max(2).default([]), // up to two short paragraphs
-    button: z.object({
-        label: z.string(),
-        url: z.string(), // "/music" for an on-site page, or a full https:// URL
-    }).optional(),
+    buttons: z.array(CtaSchema).max(2).default([]),
 })
 export const HomeSchema = z.object({
     bannerImage: HomeBannerImageSchema.optional(),
@@ -172,6 +204,26 @@ export const HomeSchema = z.object({
     featuredVideo: FeaturedVideoSchema.optional(),
     featuredVideoUrl: UrlString.optional(),
     announcement: AnnouncementSchema.optional(),
+    // Section copy for the redesigned home page. Leave one out to hide that section.
+    merch: z.object({
+        title: z.string(),
+        count: z.number().int().min(1).default(4), // products shown
+        cta: CtaSchema.optional(),
+    }).optional(),
+    press: z.object({ eyebrow: z.string() }).optional(), // quotes come from about.pressQuotes
+    tourSection: z.object({
+        title: z.string(),
+        note: z.string().optional(),
+        ticketsLabel: z.string().default('Tickets'),
+        soldOutLabel: z.string().default('Sold Out'),
+        limit: z.number().int().min(1).optional(), // show only the next N dates
+        cta: CtaSchema.optional(), // e.g. "See all dates →" to /tour
+    }).optional(),
+    signup: SignupSchema.optional(),
+    listenOn: z.object({
+        label: z.string(),
+        links: z.array(PlatformLinkSchema),
+    }).optional(),
 })
 
 // ─── Music ────────────────────────────────────────────────
@@ -200,9 +252,51 @@ export const ReleaseSchema = z.object({
     displayOrder: z.number().optional(),
 })
 
+export const SpotlightStatusKey = z.enum(['auto', 'coming_soon', 'out_now'])
+// Dark hero at the top of /music. "auto" shows comingSoon until premiereAt passes, then outNow.
+export const MusicSpotlightSchema = z.object({
+    title: z.string(),
+    coverImage: z.string(),
+    coverAlt: z.string().default(''),
+    status: SpotlightStatusKey.default('auto'),
+    premiereAt: z.string(), // ISO date-time
+    comingSoon: z.object({
+        badge: z.string(),
+        text: z.string(),
+        links: z.array(PlatformLinkSchema).default([]), // presave buttons
+    }),
+    outNow: z.object({
+        badge: z.string(),
+        text: z.string(),
+        watch: CtaSchema.optional(),
+        links: z.array(PlatformLinkSchema).default([]),
+    }),
+})
+export const MusicPlayerSchema = z.object({
+    nowPlayingLabel: z.string().default('Now playing'),
+    title: z.string(),
+    artist: z.string(),
+    coverImage: z.string(),
+    playUrl: UrlString.optional(), // the play button opens this (e.g. the Spotify link)
+    elapsed: z.string(), // shown under the progress bar, e.g. "1:17"
+    progress: z.number().min(0).max(1).default(0.35),
+    tracks: z.array(z.object({ title: z.string(), duration: z.string() })),
+})
 export const MusicSchema = z.object({
     releases: z.array(ReleaseSchema),
     gridColumns: z.enum(['1', '2', '3', '4']).default('2'),
+    spotlight: MusicSpotlightSchema.optional(),
+    listen: z.object({
+        eyebrow: z.string().optional(),
+        title: z.string(),
+        text: z.string().optional(),
+        platforms: z.array(PlatformLinkSchema),
+        player: MusicPlayerSchema.optional(),
+    }).optional(),
+    discographyTitle: z.string().default('Discography'),
+    discographyLinkLabel: z.string().default('Listen →'),
+    videosTitle: z.string().default('Music Videos'),
+    signup: SignupSchema.optional(),
 })
 
 // ─── Videos ───────────────────────────────────────────────
@@ -212,7 +306,11 @@ export const MusicSchema = z.object({
 export const VideoSchema = z.object({
     id: z.string(),
     title: z.string(),
-    youtubeVideoId: z.string(),
+    youtubeVideoId: z.string().optional(), // embeds on /videos; leave out to only link to url
+    url: UrlString.optional(), // where the /music video card links
+    thumbnail: z.string().optional(),
+    caption: z.string().optional(),
+    tag: z.string().optional(), // label on the /music card, e.g. "Official Video"
     channelName: z.string().optional(),
     type: z.enum(['music_video', 'live', 'video', 'scheduled', 'other']),
     publishedDate: z.string(), // ISO date
@@ -255,6 +353,18 @@ export const TourSchema = z.object({
     // Integration: embed Seated widget vs render our own list
     seatedWidgetUrl: UrlString.optional(), // if set, iframe it instead
     seatedEmbedCode: z.string().optional(),
+    // Designed /tour page (manual listings). Without it, /tour uses the basic list or Seated widget.
+    page: z.object({
+        hero: z.object({
+            image: HomeBannerImageSchema,
+            content: HomeBannerContentSchema,
+        }),
+        title: z.string(),
+        note: z.string().optional(),
+        ticketsLabel: z.string().default('Tickets'),
+        soldOutLabel: z.string().default('Sold Out'),
+        signup: SignupSchema.optional(),
+    }).optional(),
 })
 
 // ─── VIP ──────────────────────────────────────────────────
@@ -299,6 +409,91 @@ export const ShopItemSchema = z.object({
     category: ShopItemCategorySchema,
     sizes: z.array(ClothingSizeKey).optional(),
     isFeatured: z.boolean().default(false),
+    slug: z.string().optional(), // /merch/<slug>; defaults to the name in kebab case
+    imageAlt: z.string().optional(),
+    badge: z.string().optional(), // e.g. "Bestseller"
+    sizeNote: z.string().optional(), // under the card title, e.g. "Sizes XS–3XL"
+    descriptionList: z.array(z.string()).optional(), // e.g. a track list, shown under the description
+    footnote: z.string().optional(), // small print, e.g. "*Limited to 2 per customer"
+    details: z.array(z.string()).optional(), // "Details" accordion bullets
+})
+
+export const ShopPerkIconKey = z.enum(['truck', 'returns', 'lock'])
+export const ShippingMethodSchema = z.object({
+    id: z.string(),
+    label: z.string(),
+    detail: z.string(),
+    price: z.number(),
+    freeOverThreshold: z.boolean().default(false), // free when the subtotal reaches freeShippingThreshold
+})
+// The on-site demo store (cart, checkout, confirmation). No payment is taken and no details are collected.
+export const StoreSchema = z.object({
+    title: z.string().default('Merch'),
+    intro: z.string().optional(),
+    banner: z.object({
+        eyebrow: z.string().optional(),
+        title: z.string(),
+        text: z.string().optional(),
+        image: z.string(),
+        cta: CtaSchema,
+    }).optional(),
+    perks: z.array(z.object({ icon: ShopPerkIconKey, title: z.string(), text: z.string() })).default([]),
+    chooseSizeLabel: z.string().default('Choose size'),
+    addToCartLabel: z.string().default('Add to cart'),
+    product: z.object({
+        shippingReturns: z.string(),
+        sizeGuide: z.object({
+            headers: z.array(z.string()),
+            rows: z.array(z.array(z.string())),
+            note: z.string().optional(),
+        }).optional(),
+        relatedTitle: z.string().default('You may also like'),
+    }),
+    freeShippingThreshold: z.number().default(0), // 0 turns the free-shipping bar off
+    shippingMethods: z.array(ShippingMethodSchema).min(1),
+    demoNotice: z.string(),
+    steps: z.tuple([z.string(), z.string(), z.string()]).default(['Cart', 'Checkout', 'Confirmation']),
+    cart: z.object({
+        title: z.string().default('Your Cart'),
+        emptyText: z.string().default('Your cart is empty.'),
+        summaryTitle: z.string().default('Order Summary'),
+        checkoutLabel: z.string().default('Checkout'),
+        keepShoppingLabel: z.string().default('← Keep shopping'),
+        footnote: z.string().optional(),
+    }),
+    checkout: z.object({
+        title: z.string().default('Checkout'),
+        backLabel: z.string().default('← Back to cart'),
+        expressLabel: z.string().default('Express checkout'),
+        expressOptions: z.array(z.string()).default([]), // display-only buttons
+        dividerLabel: z.string().default('or pay with card'),
+        // Numbered cards in order. "fields" cards are display-only (placeholders show as sample values);
+        // the "delivery" card lists shippingMethods.
+        sections: z.array(z.object({
+            title: z.string(),
+            kind: z.enum(['fields', 'delivery']).default('fields'),
+            fields: z.array(z.object({
+                label: z.string(),
+                placeholder: z.string(),
+                width: z.enum(['full', 'half', 'third']).default('full'),
+            })).default([]),
+        })),
+        placeOrderLabel: z.string().default('Place order'),
+    }),
+    confirmation: z.object({
+        title: z.string().default('Thank you!'),
+        text: z.string(),
+        orderNumberLabel: z.string().default('Order number'),
+        deliveryLabel: z.string().default('Estimated delivery'),
+        deliveryWindowDays: z.tuple([z.number(), z.number()]).default([5, 7]),
+        shipToLabel: z.string().default('Shipping to'),
+        shipTo: z.string(),
+        nextTitle: z.string().default('What happens next'),
+        nextSteps: z.array(z.object({ title: z.string(), text: z.string() })),
+        detailsTitle: z.string().default('Order details'),
+        emptyText: z.string().default('No recent order found.'),
+        continueLabel: z.string().default('Continue shopping'),
+    }),
 })
 
 export const ShopSchema = z.object({
@@ -308,6 +503,7 @@ export const ShopSchema = z.object({
     featuredItems: z.array(ShopItemSchema).optional(),
     // If true, /shop just redirects to externalStoreUrl immediately.
     redirectOnly: z.boolean().default(true),
+    store: StoreSchema.optional(), // on-site demo store at /merch; without it, /merch lists featuredItems with Buy links
 })
 
 // ─── About ────────────────────────────────────────────────
@@ -346,6 +542,35 @@ export const AboutSchema = z.object({
     downloadableAssetsUrl: UrlString.optional(),
     techRiderUrl: UrlString.optional(),
     bookUrl: UrlString.optional(), // e.g. memoirs/autobiography
+    page: z.object({
+        eyebrow: z.string().optional(),
+        title: z.string(),
+        portrait: z.string(),
+        portraitAlt: z.string().default(''),
+        quote: z.string().optional(), // script pull quote in the hero
+        cta: CtaSchema.optional(),
+        pullQuote: z.object({ quote: z.string(), attribution: z.string() }).optional(),
+        story: z.object({
+            eyebrow: z.string().optional(),
+            title: z.string(),
+            paragraphs: z.array(z.string()),
+        }).optional(),
+        socials: z.object({
+            title: z.string(),
+            followLabel: z.string().default('Follow →'),
+            items: z.array(z.object({
+                platform: z.enum(['instagram', 'tiktok', 'twitter', 'youtube', 'facebook']),
+                handle: z.string(),
+                detail: z.string(), // e.g. "Instagram · 120K followers"
+                url: UrlString,
+            })),
+        }).optional(),
+        closing: z.object({
+            title: z.string(),
+            text: z.string().optional(),
+            cta: CtaSchema.optional(),
+        }).optional(),
+    }).optional(),
 })
 
 // ─── Newsletter ───────────────────────────────────────────
@@ -381,6 +606,15 @@ export const FooterSchema = z.object({
         soundcloud: UrlString.optional(),
     }),
     copyrightName: z.string(), // e.g. Sony Music Entertainment
+    copyrightYear: z.number().optional(), // defaults to the current year
+    tagline: z.string().optional(),
+    exploreTitle: z.string().default('Explore'), // column of the site nav
+    listen: z.object({
+        title: z.string(),
+        links: z.array(z.object({ label: z.string(), url: UrlString })),
+    }).optional(),
+    signup: SignupSchema.optional(),
+    bookingLabel: z.string().default('Booking & press:'), // shown before contact.bookingEmail
     legalLinks: z.array(z.object({
         label: z.string(), // e.g. Privacy Policy
         url: UrlString,
@@ -483,6 +717,13 @@ export type VIP = z.infer<typeof VIPSchema>
 export type Shop = z.infer<typeof ShopSchema>
 
 export type About = z.infer<typeof AboutSchema>
+export type Cta = z.infer<typeof CtaSchema>
+export type StreamingPlatform = z.infer<typeof StreamingPlatformKey>
+export type PlatformLink = z.infer<typeof PlatformLinkSchema>
+export type Signup = z.infer<typeof SignupSchema>
+export type Store = z.infer<typeof StoreSchema>
+export type ShippingMethod = z.infer<typeof ShippingMethodSchema>
+export type MusicSpotlight = z.infer<typeof MusicSpotlightSchema>
 
 // The shape you write in epk.ts, before schema defaults are applied.
 export type EPKInput = z.input<typeof EPKSchema>

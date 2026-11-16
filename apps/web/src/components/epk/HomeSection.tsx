@@ -1,206 +1,144 @@
-import { Link } from 'react-router-dom'
 import { useEPKOutlet } from '../../hooks/useEPKOutlet'
-import { AboutSection } from './AboutSection'
-import { Button } from '../shared/Button'
-import { getButtonProps } from '../shared/buttonStyles'
-import { FallbackImage } from '../shared/FallbackImage'
-import { MusicGrid } from './MusicGrid'
-import { NewsletterSection } from './NewsletterSection'
-import { ShopGrid } from './ShopGrid'
-import { TourList } from './TourList'
-import { VIPPage } from './VIPPage'
-import { VideoGrid } from './VideoGrid'
-import { YouTubeEmbed } from '../shared/YouTubeEmbed'
-import { getYouTubeVideoId } from '../shared/youtube'
-
-type HomeSectionKey =
-  | 'music'
-  | 'videos'
-  | 'shop'
-  | 'tour'
-  | 'vip'
-  | 'about'
-  | 'newsletter'
-  | 'contact'
-
-const renderHomeSection = (section: HomeSectionKey) => {
-  switch (section) {
-    case 'music':
-      return <MusicGrid />
-    case 'videos':
-      return <VideoGrid />
-    case 'shop':
-      return <ShopGrid />
-    case 'tour':
-      return <TourList />
-    case 'vip':
-      return <VIPPage />
-    case 'about':
-      return <AboutSection />
-    case 'newsletter':
-      return <NewsletterSection />
-    case 'contact':
-      return <HomeContactSection />
-    default:
-      return null
-  }
-}
-
-// Cream button over the dark banner scrim on desktop; the site default (dark) where the copy stacks below.
-const bannerButtonClassName =
-  'mt-2 self-start tracking-wider lg:[--button-color:var(--color-brand-accent)] lg:[--button-contrast:var(--color-brand-secondary)] type-body'
-
-function HomeBannerButton({ label, url }: { label: string; url: string }) {
-  if (url.startsWith('/')) {
-    return (
-      <Link {...getButtonProps({ shape: 'pill', className: bannerButtonClassName })} to={url}>
-        {label}
-      </Link>
-    )
-  }
-
-  return (
-    <Button className={bannerButtonClassName} external href={url} shape="pill">
-      {label}
-    </Button>
-  )
-}
-
-function HomeContactSection() {
-  const { epk } = useEPKOutlet()
-
-  return (
-    <section data-section="contact">
-      <header>
-        <p>Contact</p>
-        <h1>Contact</h1>
-      </header>
-      <div data-list="contacts">
-        <a href={`mailto:${epk.contact.bookingEmail}`}>Booking</a>
-        {epk.contact.pressEmail && <a href={`mailto:${epk.contact.pressEmail}`}>Press</a>}
-        {epk.contact.managementEmail && (
-          <a href={`mailto:${epk.contact.managementEmail}`}>Management</a>
-        )}
-        {epk.contact.syncEmail && <a href={`mailto:${epk.contact.syncEmail}`}>Sync</a>}
-      </div>
-    </section>
-  )
-}
+import { upcomingDates } from '../../utils/tour'
+import { getProducts } from '../../utils/products'
+import { Countdown } from '../shared/Countdown'
+import { ProductCard } from './store/ProductCard'
+import { CtaButton } from './ui/CtaButton'
+import { Eyebrow } from './ui/Eyebrow'
+import { platformInfo } from './ui/platforms'
+import { PhotoHero } from './ui/PhotoHero'
+import { PlatformPill } from './ui/PlatformPill'
+import { SectionTitle } from './ui/SectionTitle'
+import { SignupCard } from './ui/SignupCard'
+import { SmartLink } from './ui/SmartLink'
+import { TourDates } from './ui/TourDates'
 
 export function HomeSection() {
   const { epk } = useEPKOutlet()
-  const release = epk.home.featuredRelease
-  const hasMusicContent = epk.music.releases.length > 0
-  const canLinkToMusic = epk.nav.includes('music') && hasMusicContent
-  const sectionsOnHome = [
-    ...new Set<HomeSectionKey>([
-      ...(epk.home.sectionsOnHome ?? []),
-      ...(epk.home.showTourDatesOnHome ? ['tour' as HomeSectionKey] : []),
-    ]),
-  ]
-  const featuredVideoUrl = epk.home.featuredVideo?.url ?? epk.home.featuredVideoUrl
-  const featuredVideoId =
-    epk.home.featuredVideo?.youtubeVideoId ?? getYouTubeVideoId(featuredVideoUrl)
-  const matchingFeaturedVideo = epk.videos.find(
-    (video) => video.youtubeVideoId === featuredVideoId,
-  )
-  const featuredVideo = {
-    url: featuredVideoUrl,
-    youtubeVideoId: featuredVideoId,
-    title: epk.home.featuredVideo?.title || matchingFeaturedVideo?.title,
-    channelName:
-      epk.home.featuredVideo?.channelName || matchingFeaturedVideo?.channelName,
-    publishedDate:
-      epk.home.featuredVideo?.publishedDate || matchingFeaturedVideo?.publishedDate,
-  }
-
-  const bannerImage = epk.home.bannerImage
-  const bannerContent = epk.home.bannerContent
+  const { home, branding } = epk
+  const release = home.featuredRelease
+  const products = getProducts(epk).slice(0, home.merch?.count ?? 4)
+  const tourDates = upcomingDates(epk.tour.dates).slice(0, home.tourSection?.limit)
+  const quotes = epk.about.pressQuotes
 
   return (
-    <section data-section="home">
-      {bannerImage && (
-        <div data-section="banner" className="relative">
-          <picture data-field="bannerImage">
-            <source media="(min-width: 64rem)" srcSet={bannerImage.src} />
-            <img
-              alt={bannerImage.alt}
-              className="h-46.5 w-full object-cover lg:h-111.25"
-              src={bannerImage.mobileSrc ?? bannerImage.src}
-              style={{ objectPosition: bannerImage.position }}
-            />
-          </picture>
-          {bannerContent && (
-            <div
-              data-field="bannerContent"
-              className="lg:absolute lg:inset-0 lg:flex lg:items-center lg:bg-linear-to-r lg:from-black/70 lg:via-black/35 lg:to-transparent"
-            >
-              <div className="page-shell py-8 lg:py-0">
-                <div className="flex max-w-lg flex-col gap-3 lg:text-brand-accent">
-                  <h2 className="type-h2 lg:type-h1 font-bold" data-field="title">{bannerContent.title}</h2>
-                  {bannerContent.paragraphs.map((paragraph) => (
-                    <p className="type-body font-josefin" key={paragraph}>{paragraph}</p>
-                  ))}
-                  {bannerContent.button && (
-                    <HomeBannerButton label={bannerContent.button.label} url={bannerContent.button.url}/>
-                  )}
-                </div>
-              </div>
+    <div data-section="home">
+      {home.announcement && (
+        <p className="bg-brand-secondary px-4 py-2.5 text-center text-[13px] font-semibold tracking-wide text-brand-accent">
+          {home.announcement.linkUrl ? (
+            <SmartLink className="hover:underline" to={home.announcement.linkUrl}>
+              {home.announcement.text} <span aria-hidden>→</span>
+              {home.announcement.linkLabel && <span className="ml-1">{home.announcement.linkLabel}</span>}
+            </SmartLink>
+          ) : (
+            home.announcement.text
+          )}
+        </p>
+      )}
+
+      <PhotoHero content={home.bannerContent} image={home.bannerImage} />
+
+      {/* Featured release */}
+      <section aria-labelledby="featured-release-title" className="page-shell grid items-center gap-10 py-20 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:gap-16 lg:py-24">
+        <img
+          alt={`${release.title} cover`}
+          className="aspect-square w-full max-w-md rounded-2xl object-cover shadow-2xl md:max-w-none"
+          loading="lazy"
+          src={release.coverImage}
+        />
+        <div>
+          <Eyebrow>{release.subtitle}</Eyebrow>
+          <h2 className="mt-3 font-script text-[60px] leading-none sm:text-[76px]" id="featured-release-title">{release.title}</h2>
+          {release.description && <p className="mt-4 max-w-lg text-[17px]">{release.description}</p>}
+          {release.countdown && (
+            <div className="mt-7 rounded-2xl border border-brand-secondary/10 bg-brand-accent/75 px-5 py-5 text-center shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-primary-dark">{release.countdown.label}</p>
+              <Countdown className="mt-2 text-[36px] sm:text-[44px]" labelClassName="text-xs text-brand-secondary/75" target={release.countdown.target} />
+            </div>
+          )}
+          {release.links.length > 0 && (
+            <div className="mt-6 flex flex-wrap gap-3">
+              {release.links.map((link) => <PlatformPill key={link.platform} link={link} />)}
             </div>
           )}
         </div>
-      )}
-      <div data-section="hero" data-field="featuredRelease">
-        <header>
-          <h1 data-field="title">{release.title}</h1>
-          <p data-field="subtitle">{release.subtitle}</p>
-          {release.smartLinkUrl && (
-            <a data-field="smartLinkUrl" href={release.smartLinkUrl}>Listen now</a>
-          )}
-          {canLinkToMusic && <Link to="/music">Music</Link>}
-        </header>
-        {release.coverImage && (
-          <div data-field="coverImage">
-            <FallbackImage
-              alt={`${release.title} cover`}
-              fallbackLabel="Release art"
-              src={release.coverImage}
-            />
+      </section>
+
+      {/* Merch */}
+      {home.merch && products.length > 0 && (
+        <section aria-labelledby="home-merch-title" className="page-shell pb-20 lg:pb-24">
+          <SectionTitle divider={branding.dividerImage} id="home-merch-title" title={home.merch.title} />
+          <div className="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
+            {products.map((product) => <ProductCard key={product.id} product={product} />)}
           </div>
-        )}
-      </div>
-      {epk.home.announcement && (
-        <section data-section="announce">
-          <p data-field="text">{epk.home.announcement.text}</p>
-          {epk.home.announcement.linkUrl && (
-            <a data-field="linkUrl" href={epk.home.announcement.linkUrl}>
-              <span data-field="linkLabel">{epk.home.announcement.linkLabel || 'Learn more'}</span>
-            </a>
+          {home.merch.cta && (
+            <div className="mt-10 flex justify-center">
+              <CtaButton cta={home.merch.cta} />
+            </div>
           )}
         </section>
       )}
-      {featuredVideo.url && (
-        <section data-section="home-featured-video">
-          <YouTubeEmbed
-            title={featuredVideo.title || 'Featured video'}
-            url={featuredVideo.url}
-            videoId={featuredVideo.youtubeVideoId}
-          />
-          <h2>{featuredVideo.title || 'Featured video'}</h2>
-          {(featuredVideo.channelName || featuredVideo.publishedDate) && (
-            <p>
-              {[featuredVideo.channelName, featuredVideo.publishedDate]
-                .filter(Boolean)
-                .join(' / ')}
-            </p>
+
+      {/* Press quotes */}
+      {home.press && quotes.length > 0 && (
+        <section aria-label={home.press.eyebrow} className="bg-brand-accent py-20">
+          <div className="page-shell text-center">
+            <Eyebrow>{home.press.eyebrow}</Eyebrow>
+            <ul className="mt-10 grid gap-12 md:grid-cols-3 md:gap-8">
+              {quotes.map((quote) => (
+                <li key={quote.id}>
+                  <figure>
+                    <blockquote className="mx-auto max-w-[16ch] font-script text-[34px] leading-tight">“{quote.quote}”</blockquote>
+                    <figcaption className="mt-3 text-xs font-semibold uppercase tracking-[0.16em] text-brand-primary-dark">
+                      — {quote.url ? <a className="hover:underline" href={quote.url} rel="noreferrer" target="_blank">{quote.publication}</a> : quote.publication}
+                    </figcaption>
+                  </figure>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {/* Tour dates */}
+      {home.tourSection && home.showTourDatesOnHome && (
+        <section aria-labelledby="tour" className="page-shell scroll-mt-28 py-20 lg:py-24">
+          <SectionTitle divider={branding.dividerImage} id="tour" title={home.tourSection.title} />
+          <div className="mt-10">
+            <TourDates dates={tourDates} soldOutLabel={home.tourSection.soldOutLabel} ticketsLabel={home.tourSection.ticketsLabel} />
+          </div>
+          {home.tourSection.note && <p className="mt-6 text-center text-sm text-brand-primary-dark">{home.tourSection.note}</p>}
+          {home.tourSection.cta && (
+            <div className="mt-6 flex justify-center">
+              <CtaButton cta={home.tourSection.cta} />
+            </div>
           )}
         </section>
       )}
-      {sectionsOnHome.map((section) => (
-        <div data-home-section={section} key={section}>
-          {renderHomeSection(section)}
+
+      {home.signup && (
+        <div className="page-shell pb-16">
+          <SignupCard signup={home.signup} />
         </div>
-      ))}
-    </section>
+      )}
+
+      {home.listenOn && (
+        <section aria-label={home.listenOn.label} className="page-shell flex items-center justify-center gap-6 pb-20">
+          <Eyebrow className="text-brand-secondary/75">{home.listenOn.label}</Eyebrow>
+          <ul className="flex gap-4">
+            {home.listenOn.links.map((link) => {
+              const { label, Icon } = platformInfo[link.platform]
+              return (
+                <li key={link.platform}>
+                  <a aria-label={label} className="grid h-11 w-11 place-items-center rounded-full transition-colors hover:bg-brand-secondary/10" href={link.url} rel="noreferrer" target="_blank">
+                    <Icon aria-hidden className="h-7 w-7" />
+                  </a>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      )}
+    </div>
   )
 }

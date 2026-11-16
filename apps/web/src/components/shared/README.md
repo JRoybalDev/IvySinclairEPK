@@ -29,6 +29,8 @@ Every file in `shared/` must follow these rules. ESLint enforces the import rule
 | `Sheet.tsx` | Panel that slides in from the top or bottom over a backdrop; Escape/backdrop close, scroll lock | react |
 | `FallbackImage.tsx` | `<img>` that shows a labelled placeholder when `src` is missing or fails to load | react |
 | `YouTubeEmbed.tsx` | Lazy-loaded YouTube iframe from a URL or video ID | react, `youtube.ts` |
+| `Countdown.tsx` | Live weeks : days : hours : minutes countdown to an ISO date | react, `useNow.ts` |
+| `useNow.ts` | `useNow(ms)`: current time that re-renders every interval (shared timer per interval) | react |
 | `youtube.ts` | `getYouTubeVideoId()`: parses watch, youtu.be, embed, shorts, and live URLs | none |
 
 ## Adding A Component

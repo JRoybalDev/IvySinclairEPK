@@ -19,10 +19,14 @@ export function VideoGrid() {
       <div data-list="videos">
         {videos.map((video) => (
           <article data-item="video" key={video.id}>
-            <YouTubeEmbed
-              videoId={video.youtubeVideoId}
-              title={video.title}
-            />
+            {video.youtubeVideoId ? (
+              <YouTubeEmbed
+                videoId={video.youtubeVideoId}
+                title={video.title}
+              />
+            ) : video.url ? (
+              <a href={video.url} rel="noreferrer" target="_blank">Watch on YouTube</a>
+            ) : null}
             <div>
               <h2>{video.title}</h2>
               <p>{[video.channelName, video.publishedDate].filter(Boolean).join(' - ')}</p>

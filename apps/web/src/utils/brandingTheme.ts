@@ -91,9 +91,10 @@ export const getEPKBrandingStyle = (branding: Branding) => {
     ...cssVar('--color-accent-hover', theme?.accentStrong),
     ...cssVar('--color-accent-contrast', theme?.foam),
     ...cssVar('--mobile-nav-background', branding.mobileNavBackground ? cssUrl(branding.mobileNavBackground) : undefined),
+    ...cssVar('--footer-texture', branding.footerTexture ? cssUrl(branding.footerTexture) : undefined),
   }
   const assignments = branding.fonts?.assignments
-  // Fixed to the viewport, so the sticky header's copy lines up seamlessly with the page behind it.
+  // Fixed to the viewport, so the texture stays put behind the translucent header as the page scrolls.
   const pageBackground = [
     'background-color:var(--color-page);',
     backgroundTexture
@@ -111,7 +112,6 @@ export const getEPKBrandingStyle = (branding: Branding) => {
       'font-family:var(--font-body);',
       '}',
     ].join(''),
-    `[data-template="epk-public-shell"] [data-section="site-header"]{${pageBackground}}`,
     fontRule('', assignments?.body),
     fontRule('h1', assignments?.h1),
     fontRule('h2', assignments?.h2),

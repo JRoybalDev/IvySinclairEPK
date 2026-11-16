@@ -22,6 +22,26 @@ The app also validates on startup, so an invalid file fails loudly instead of re
 
 The section examples below are written as JSON for readability. In `epk.ts` the same shapes are plain object literals.
 
+## Redesign Sections
+
+The site design (ported from the Framer project) reads these optional blocks. Leave one out and that section is hidden.
+
+```txt
+branding.footerTexture / dividerImage / cornerMotif / navCta   footer background, title ornaments, product-page corners, mobile menu button
+home.announcement, bannerContent (eyebrow, buttons)            announcement strip and hero
+home.featuredRelease (description, countdown, links)           featured release with live countdown and streaming pills
+home.merch / press / tourSection / signup / listenOn           home sections (press quotes come from about.pressQuotes)
+music.spotlight                                                 /music hero; status "auto" flips from comingSoon to outNow at premiereAt
+music.listen (platforms, player) / signup                       "Press play" section and mock player
+videos[].thumbnail / caption / tag / url                        /music video cards (youtubeVideoId is optional)
+shop.featuredItems[].slug / badge / sizeNote / details / ...    products for /merch and /merch/<slug>
+shop.store                                                      on-site demo store: copy, perks, shipping methods, cart, checkout, confirmation
+about.page                                                      /about hero, pull quote, story, socials, closing band
+footer.tagline / listen / signup / bookingLabel                 footer columns
+```
+
+The store is a demo: the cart persists in localStorage, checkout fields are display-only, and placing an order only shows the confirmation page. Signup forms show a thank-you message and send nothing.
+
 ## Root Shape
 
 ```json

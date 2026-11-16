@@ -212,3 +212,8 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Keep in-page anchor targets clear of the sticky header. */
+[id] {
+  scroll-margin-top: 7rem;
+}
