@@ -689,7 +689,7 @@ export const content = {
     title: 'AI Disclaimer',
     intro: [
       'Ivy Sinclair is a fictional artist, and this website is a demo. Every image of Ivy on this site was created with generative AI. She is not a real person, and her likeness is not based on, and is not intended to resemble, any real person, living or dead.',
-      'We want to be clear about where AI was used, so here is what was made with AI and what was made without it.',
+      'AI was used to create the seed data that fills this demo (the images and sample content) and to help build some of its page layouts and features. Here is what was made with AI and what was made without it.',
     ],
     madeWithAI: {
       title: 'Made with AI',
@@ -697,12 +697,14 @@ export const content = {
         'All photographs of Ivy Sinclair, including the home page banner, the About page portrait and the link-preview image.',
         'Cover art for every release: Midnight Signal, City Lights, Paper Hearts and Bedroom Tapes.',
         'Thumbnails for all eight music videos.',
-        'Parts of the website’s code and some page text were drafted with AI assistance, then reviewed and edited by our team.',
+        'Sample text used as seed data, such as Ivy’s bio, release and video titles, tour dates and product descriptions.',
+        'Some of this demo’s page layouts and features, built with AI-assisted development tools.',
       ],
     },
     madeWithoutAI: {
       title: 'Made without AI',
       items: [
+        'The underlying EPK framework: the content system, data schema and core components, built by our team without AI.',
         'The visual identity and page designs, created by our designer in Figma.',
         'The color palette, layout and typography (Josefin Sans and Just Me Again Down Here, from Google Fonts).',
         'The concert photo at the top of the Tour page, which is licensed stock photography.',
