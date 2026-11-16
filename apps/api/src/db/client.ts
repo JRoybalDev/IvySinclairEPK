@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
-import * as schema from './schema'
+import * as schema from './schema.js'
 
 // Serverless functions get a fresh process per invocation (or a handful of warm ones),
 // so keep at most one connection each rather than a large local pool. `prepare: false`

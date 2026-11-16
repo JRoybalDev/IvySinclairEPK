@@ -15,8 +15,12 @@ export const content = {
     description: 'Official site of Ivy Sinclair, a pop and R&B singer-songwriter from Los Angeles. Stream “Midnight Signal,” see tour dates, and shop merch.',
     socialImage: '/media/branding/og-image.jpg',
     socialImageAlt: 'Ivy Sinclair, pop and R&B singer-songwriter',
-    faviconPath: '/favicon.ico',
-    appleTouchIcon: '/apple-touch-icon.png',
+    faviconPath: '/favicon.ico?v=2', // bump ?v= after changing the icon so browsers refetch it
+    appleTouchIcon: '/apple-touch-icon.png?v=2',
+    faviconPngs: [
+      { src: '/favicon-32.png?v=2', sizes: '32x32' },
+      { src: '/favicon-16.png?v=2', sizes: '16x16' },
+    ],
     manifestIcons: [
       { src: '/icon-192.png', sizes: '192x192' },
       { src: '/icon-512.png', sizes: '512x512' },

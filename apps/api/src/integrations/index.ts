@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { youtube } from './youtube'
+import { youtube } from './youtube.js'
 
 // Each third-party integration is its own Hono router, mounted under
 // /api/integrations/<name>. To add one (Spotify, Bandsintown, Mailchimp, Shopify...):

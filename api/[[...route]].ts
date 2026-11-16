@@ -1,5 +1,5 @@
 import { handle } from 'hono/vercel'
-import { app } from '../apps/api/src/index'
+import { app } from '../apps/api/src/index.js'
 
 // Vercel treats any file under api/ as a serverless function. This catch-all route
 // forwards every /api/* request to the same Hono app used for local dev (apps/api),

@@ -31,6 +31,7 @@ function epkSeo(): Plugin {
         ...meta({ name: 'keywords', content: metadata?.keywords?.join(', ') }),
         ...meta({ name: 'theme-color', content: metadata?.themeColor }),
         ...link({ rel: 'canonical', href: origin ? `${origin}/` : undefined }),
+        ...(metadata?.faviconPngs ?? []).flatMap((icon) => link({ rel: 'icon', type: 'image/png', sizes: icon.sizes, href: icon.src })),
         ...link({ rel: 'icon', href: metadata?.faviconPath, sizes: 'any' }),
         ...link({ rel: 'apple-touch-icon', href: metadata?.appleTouchIcon }),
         ...link({ rel: 'manifest', href: '/site.webmanifest' }),

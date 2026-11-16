@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { integrations } from './integrations'
+import { integrations } from './integrations/index.js'
 
 export const app = new Hono()
 

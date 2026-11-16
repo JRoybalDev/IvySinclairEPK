@@ -156,6 +156,7 @@ export const MetadataSchema = z.object({
     socialImageAlt: z.string().optional(),
     faviconPath: z.string().optional(),
     appleTouchIcon: z.string().optional(), // 180x180 PNG
+    faviconPngs: z.array(z.object({ src: z.string(), sizes: z.string() })).default([]), // PNG favicons (Safari prefers these over .ico)
     manifestIcons: z.array(z.object({ src: z.string(), sizes: z.string() })).default([]), // PNG icons for site.webmanifest
     themeColor: z.string().optional(),
     // Production URL with no trailing slash, e.g. "https://ivysinclair.com". Used for canonical links,
