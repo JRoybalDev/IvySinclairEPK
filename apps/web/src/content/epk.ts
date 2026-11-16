@@ -22,8 +22,8 @@ export const content = {
       { src: '/icon-512.png', sizes: '512x512' },
     ],
     themeColor: '#353123',
-    // Set to the production domain (no trailing slash) once it's known, e.g. 'https://ivysinclair.com'.
-    // siteUrl: 'https://ivysinclair.com',
+    // Production domain (no trailing slash): canonical links, absolute share-image URLs and sitemap.xml.
+    siteUrl: 'https://ivysinclair.vercel.app',
     locale: 'en_US',
     keywords: ['Ivy Sinclair', 'pop', 'R&B', 'singer-songwriter', 'Los Angeles', 'Midnight Signal'],
     pages: {
