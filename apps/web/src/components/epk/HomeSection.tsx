@@ -23,8 +23,9 @@ export function HomeSection() {
 
   return (
     <div data-section="home">
+      {/* data-transition-hold: stays in place and fades with the hero during page transitions. */}
       {home.announcement && (
-        <p className="bg-brand-secondary px-4 py-2.5 text-center text-[13px] font-semibold tracking-wide text-brand-accent">
+        <p className="bg-brand-secondary px-4 py-2.5 text-center text-[13px] font-semibold tracking-wide text-brand-accent" data-transition-hold>
           {home.announcement.linkUrl ? (
             <SmartLink className="hover:underline" to={home.announcement.linkUrl}>
               {home.announcement.text} <span aria-hidden>→</span>
@@ -81,7 +82,7 @@ export function HomeSection() {
 
       {/* Press quotes */}
       {home.press && quotes.length > 0 && (
-        <section aria-label={home.press.eyebrow} className="bg-brand-accent py-20">
+        <section aria-label={home.press.eyebrow} className="bg-brand-accent py-20" data-bleed>
           <div className="page-shell text-center">
             <Eyebrow>{home.press.eyebrow}</Eyebrow>
             <ul className="mt-10 grid gap-12 md:grid-cols-3 md:gap-8">

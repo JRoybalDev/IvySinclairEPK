@@ -213,6 +213,41 @@ button {
   }
 }
 
+/*
+  Page transition bleed: while the page slides (components/epk/PageTransition), edge-to-edge sections
+  marked data-bleed extend their background a screen past each side, so a band of color stays until the
+  section itself has left instead of revealing empty page beside it. Plain data-bleed extends the base
+  color; data-bleed="texture" extends the whole background, image included. Photo heroes don't bleed:
+  they carry data-transition-hold and fade in place instead.
+*/
+[data-page-sliding] [data-bleed] {
+  position: relative;
+}
+
+[data-page-sliding] [data-bleed]::before,
+[data-page-sliding] [data-bleed]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100vw;
+  background-color: inherit;
+  pointer-events: none;
+}
+
+[data-page-sliding] [data-bleed]::before {
+  right: 100%;
+}
+
+[data-page-sliding] [data-bleed]::after {
+  left: 100%;
+}
+
+[data-page-sliding] [data-bleed="texture"]::before,
+[data-page-sliding] [data-bleed="texture"]::after {
+  background: inherit;
+}
+
 /* Keep in-page anchor targets clear of the sticky header. */
 [id] {
   scroll-margin-top: 7rem;

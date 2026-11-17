@@ -55,7 +55,11 @@ function epkSeo(): Plugin {
           injectTo: 'head',
         },
       ]
-      return { html: html.replace(/\s*<title>[\s\S]*?<\/title>/, ''), tags }
+      const loaderName = (epk.branding.logoText || epk.artistName).replace(/[&<>"]/g, (char) => `&#${char.charCodeAt(0)};`)
+      return {
+        html: html.replace(/\s*<title>[\s\S]*?<\/title>/, '').replace('<!--epk-loader-name-->', loaderName),
+        tags,
+      }
     },
     generateBundle() {
       const noIndexPaths = ['/cart', '/checkout', '/confirmation'].filter((path) => resolvePageMeta(epk, path).noIndex)

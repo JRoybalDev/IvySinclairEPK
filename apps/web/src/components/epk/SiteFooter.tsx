@@ -54,6 +54,7 @@ export function SiteFooter({ epk, navItems }: { epk: EPK; navItems: FooterNavIte
   return (
     <footer
       className="bg-brand-secondary bg-(image:--footer-texture) bg-cover bg-center text-brand-accent"
+      data-bleed="texture"
       data-section="footer"
     >
       <div className="page-shell grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.5fr] lg:gap-12">

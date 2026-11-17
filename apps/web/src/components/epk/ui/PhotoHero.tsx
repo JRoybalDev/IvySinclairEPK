@@ -11,7 +11,8 @@ type PhotoHeroProps = {
 /** Full-bleed photo with a dark gradient and script headline (Home and Tour heroes). */
 export function PhotoHero({ image, content, label = 'Introduction' }: PhotoHeroProps) {
   return (
-    <section aria-label={label} className="relative isolate flex min-h-[560px] items-end overflow-hidden bg-brand-secondary lg:min-h-[600px] lg:items-center">
+    // data-transition-hold: during page transitions the hero stays in place and fades while the rest of the page slides.
+    <section aria-label={label} className="relative isolate flex min-h-[560px] items-end overflow-hidden bg-brand-secondary lg:min-h-[600px] lg:items-center" data-transition-hold>
       {image && (
         <picture>
           {image.mobileSrc && <source media="(max-width: 767px)" srcSet={image.mobileSrc} />}

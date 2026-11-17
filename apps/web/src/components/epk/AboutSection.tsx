@@ -40,7 +40,7 @@ export function AboutSection() {
       </section>
 
       {page.pullQuote && (
-        <section aria-label="Quote" className="bg-brand-accent py-20">
+        <section aria-label="Quote" className="bg-brand-accent py-20" data-bleed>
           <figure className="page-shell text-center">
             <blockquote className="mx-auto max-w-4xl font-script text-[38px] leading-tight sm:text-[48px]">{page.pullQuote.quote}</blockquote>
             <figcaption className="mt-4 text-sm font-semibold tracking-wide text-brand-primary-dark">{page.pullQuote.attribution}</figcaption>
@@ -94,7 +94,7 @@ export function AboutSection() {
       )}
 
       {page.closing && (
-        <section aria-labelledby="about-closing-title" className="bg-brand-accent py-20 text-center">
+        <section aria-labelledby="about-closing-title" className="bg-brand-accent py-20 text-center" data-bleed>
           <div className="page-shell">
             <h2 className="font-script text-[48px] leading-none sm:text-[56px]" id="about-closing-title">{page.closing.title}</h2>
             {page.closing.text && <p className="mt-4 text-brand-primary-dark">{page.closing.text}</p>}

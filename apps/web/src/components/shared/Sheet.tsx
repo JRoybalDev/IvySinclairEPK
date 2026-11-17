@@ -87,13 +87,16 @@ export function Sheet({
         className={`absolute inset-0 transition-opacity duration-300 motion-reduce:transition-none ${open ? 'opacity-100' : 'opacity-0'} ${backdropClassName}`}
         onClick={onClose}
       />
-      {/* The track starts at `offset` and clips the panel, so it never slides over what's above it. */}
+      {/*
+        The track starts at `offset` and clips the panel, so it never slides over what's above it.
+        Opening eases out and closing eases in (the same curve mirrored), so closing plays as the opening in reverse.
+      */}
       <div
         className="pointer-events-none absolute inset-x-0 overflow-hidden"
         style={side === 'top' ? { top: offset, bottom: 0 } : { top: 0, bottom: offset }}
       >
         <div
-          className={`pointer-events-auto absolute inset-x-0 ${panelClasses.position} max-h-[85%] overflow-y-auto transition-transform duration-300 ease-out motion-reduce:transition-none ${open ? 'translate-y-0' : panelClasses.closed} ${panelLook}`}
+          className={`pointer-events-auto absolute inset-x-0 ${panelClasses.position} max-h-[85%] overflow-y-auto transition-transform duration-300 motion-reduce:transition-none ${open ? 'translate-y-0 ease-out' : `${panelClasses.closed} ease-in`} ${panelLook}`}
           id={id}
           ref={panelRef}
         >

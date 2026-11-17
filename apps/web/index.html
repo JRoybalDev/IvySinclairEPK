@@ -10,8 +10,78 @@
       href="https://fonts.googleapis.com/css2?family=Bpmf+Iansui&family=Iansui&family=Josefin+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Just+Me+Again+Down+Here&display=swap"
       rel="stylesheet"
     />
+    <!--
+      Loading screen: shown on reloads of any page and on fresh loads of the home page.
+      Styled inline so it paints before the app bundle; src/loader.ts dismisses it.
+    -->
+    <style>
+      #epk-loader { display: none; }
+      html[data-loader] body { overflow: hidden; }
+      html[data-loader] #epk-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: grid;
+        place-items: center;
+        background: #ededd2;
+        color: #353123;
+        transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1) 0.3s;
+      }
+      .epk-loader__inner { display: grid; justify-items: center; gap: 1.25rem; }
+      .epk-loader__name {
+        margin: 0;
+        padding: 0 0.15em;
+        font-family: "Just Me Again Down Here", cursive;
+        font-size: clamp(64px, 14vw, 128px);
+        line-height: 1;
+        white-space: nowrap;
+        clip-path: inset(0 100% 0 0);
+        transition: clip-path 1.1s cubic-bezier(0.65, 0, 0.35, 1);
+      }
+      .epk-loader__bar {
+        display: block;
+        width: min(220px, 50vw);
+        height: 1px;
+        background: #aab988;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 3s cubic-bezier(0.1, 0.6, 0.3, 1);
+      }
+      /* Write the name on once the script font is in, so it never draws in the fallback face. */
+      html[data-loader-font] .epk-loader__name { clip-path: inset(0 0 0 0); }
+      html[data-loader] .epk-loader__bar { transform: scaleX(0.85); }
+      html[data-loader="done"] .epk-loader__bar { transform: scaleX(1); transition-duration: 0.3s; }
+      html[data-loader="done"] #epk-loader { transform: translateY(-100%); }
+      @media (prefers-reduced-motion: reduce) {
+        .epk-loader__name, .epk-loader__bar, html[data-loader] #epk-loader { transition: none !important; }
+      }
+    </style>
+    <script>
+      (function () {
+        try {
+          var nav = performance.getEntriesByType('navigation')[0]
+          var reload = nav ? nav.type === 'reload' : performance.navigation && performance.navigation.type === 1
+          if (!reload && location.pathname !== '/') return
+          var root = document.documentElement
+          root.setAttribute('data-loader', '')
+          var showName = function () { root.setAttribute('data-loader-font', '') }
+          if (document.fonts && document.fonts.load) {
+            document.fonts.load('64px "Just Me Again Down Here"').then(showName, showName)
+            setTimeout(showName, 1500)
+          } else {
+            showName()
+          }
+        } catch (error) {}
+      })()
+    </script>
   </head>
   <body>
+    <div id="epk-loader" aria-hidden="true">
+      <div class="epk-loader__inner">
+        <p class="epk-loader__name"><!--epk-loader-name--></p>
+        <span class="epk-loader__bar"></span>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

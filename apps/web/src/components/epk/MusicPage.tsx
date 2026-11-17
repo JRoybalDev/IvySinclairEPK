@@ -21,7 +21,9 @@ function Spotlight({ spotlight }: { spotlight: MusicSpotlight }) {
   return (
     <section
       aria-labelledby="spotlight-title"
+      // data-transition-hold: during page transitions the spotlight stays in place and fades while the rest of the page slides.
       className="relative isolate bg-brand-secondary bg-cover bg-center text-brand-accent"
+      data-transition-hold
       style={spotlight.backgroundImage ? { backgroundImage: `url("${spotlight.backgroundImage}")` } : undefined}
     >
       {spotlight.backgroundImage && (
@@ -187,7 +189,7 @@ export function MusicPage() {
       )}
 
       {featuredVideo && (
-        <section aria-labelledby="videos-title" className="bg-brand-accent/45 py-20 lg:py-24">
+        <section aria-labelledby="videos-title" className="bg-brand-accent/45 py-20 lg:py-24" data-bleed>
           <div className="page-shell">
             <SectionTitle divider={branding.dividerImage} id="videos-title" title={music.videosTitle} />
             <div className="mt-10">

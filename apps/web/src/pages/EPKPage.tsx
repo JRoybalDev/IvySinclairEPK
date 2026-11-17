@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { HiBars3, HiXMark } from 'react-icons/hi2'
 import { Sheet } from '../components/shared/Sheet'
+import { PageTransition } from '../components/epk/PageTransition'
 import { SiteFooter } from '../components/epk/SiteFooter'
 import { CtaButton } from '../components/epk/ui/CtaButton'
 import { socialIcons } from '../components/epk/ui/platforms'
@@ -60,6 +61,16 @@ const getExternalNavUrl = (epk: EPK, item: EPK['nav'][number]) => {
   }
 }
 
+// Page order for the page transition's direction: the nav's own pages in nav order, with the store's
+// cart -> checkout -> confirmation flow following Merch. Product pages (/merch/:slug) rank just after Merch.
+const storeFlow = ['/cart', '/checkout', '/confirmation']
+const pageOrder = epk.nav
+  .filter((item) => isConfiguredNavItem(epk, item) && item !== 'contact' && !getExternalNavUrl(epk, item))
+  .flatMap((item) => {
+    const path = navPaths[item as keyof typeof navPaths]
+    return item === 'shop' && epk.shop?.store ? [path, ...storeFlow] : [path]
+  })
+
 const menuIconClassName = 'absolute inset-0 w-8 h-8 transition-opacity duration-200'
 const menuIconShown = 'opacity-100'
 const menuIconHidden = 'opacity-0'
@@ -91,7 +102,7 @@ function CartPill({ onNavigate }: { onNavigate?: () => void }) {
   )
 }
 
-/** Scrolls to the top on page changes, or to the #hash target when there is one. */
+/** Scrolls to the top on page changes, or to the #hash target when there is one. Instant, since it happens under the page transition. */
 function useScrollRestoration() {
   const { pathname, hash } = useLocation()
   useEffect(() => {
@@ -99,7 +110,7 @@ function useScrollRestoration() {
       document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView({ behavior: 'smooth' })
       return
     }
-    window.scrollTo(0, 0)
+    window.scrollTo({ top: 0, behavior: 'instant' })
   }, [pathname, hash])
 }
 
@@ -124,6 +135,24 @@ export function EPKPage() {
     return () => desktop.removeEventListener('change', onChange)
   }, [])
 
+  // The menu stays down while a tapped link changes the page, and lifts only once the new page has painted
+  // behind it, so it never reveals the page being left.
+  useEffect(() => {
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => setMenuOpen(false))
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [location.pathname])
+
+  /**
+   * For links inside the menu: links that change the page leave the menu open (the effect above closes it once
+   * the new page is up); anything else (same page, #hash, external, mailto) closes it straight away.
+   */
+  const closeMenuUnlessLeaving = (to: string) => {
+    const changesPage = to.startsWith('/') && !to.startsWith('//') && new URL(to, window.location.origin).pathname !== location.pathname
+    if (!changesPage) closeMenu()
+  }
+
   const brandingStyle = getEPKBrandingStyle(epk.branding)
   const brandName = epk.branding.logoText || epk.artistName
   const navItems = epk.nav.filter((item) => isConfiguredNavItem(epk, item))
@@ -131,12 +160,12 @@ export function EPKPage() {
     .map((key) => [key, epk.footer.socials[key as keyof typeof epk.footer.socials]] as const)
     .filter((entry): entry is readonly [string, string] => Boolean(entry[1]))
 
-  const renderNavItem = (item: EPK['nav'][number], className: string, onNavigate?: () => void) => {
+  const renderNavItem = (item: EPK['nav'][number], className: string, onNavigate?: (to: string) => void) => {
     const externalNavUrl = getExternalNavUrl(epk, item)
 
     if (item === 'contact') {
       return (
-        <a className={className} href={`mailto:${epk.contact.bookingEmail}`} key={item} onClick={onNavigate}>
+        <a className={className} href={`mailto:${epk.contact.bookingEmail}`} key={item} onClick={() => onNavigate?.(`mailto:${epk.contact.bookingEmail}`)}>
           {navLabels[item]}
         </a>
       )
@@ -144,14 +173,14 @@ export function EPKPage() {
 
     if (externalNavUrl) {
       return (
-        <a className={className} href={externalNavUrl} key={item} onClick={onNavigate} rel="noreferrer" target="_blank">
+        <a className={className} href={externalNavUrl} key={item} onClick={() => onNavigate?.(externalNavUrl)} rel="noreferrer" target="_blank">
           {navLabels[item]}
         </a>
       )
     }
 
     return (
-      <NavLink className={className} end={item === 'home'} key={item} onClick={onNavigate} to={navPaths[item]}>
+      <NavLink className={className} end={item === 'home'} key={item} onClick={() => onNavigate?.(navPaths[item])} to={navPaths[item]}>
         {navLabels[item]}
       </NavLink>
     )
@@ -173,7 +202,7 @@ export function EPKPage() {
         <div className="page-shell relative grid h-22 grid-cols-[1fr_auto] items-center gap-4 lg:grid-cols-[1fr_auto_1fr]">
           {/* relative z-50 keeps the name and menu toggle above the mobile menu's backdrop. */}
           <div data-field="branding" className="relative z-50">
-            <NavLink className="inline-flex items-center" to="/" aria-label={`${epk.artistName} home`} onClick={closeMenu}>
+            <NavLink className="inline-flex items-center" to="/" aria-label={`${epk.artistName} home`} onClick={() => closeMenuUnlessLeaving('/')}>
               {epk.branding.logoImage && (
                 <img className="hidden lg:block" src={epk.branding.logoImage} alt={epk.artistName} />
               )}
@@ -190,7 +219,7 @@ export function EPKPage() {
             {navItems.map((item) => renderNavItem(item, `font-josefin text-[18px] ${desktopNavLinkClassName}`))}
           </nav>
           <div className="relative z-50 flex items-center justify-end gap-3">
-            <CartPill onNavigate={closeMenu} />
+            <CartPill onNavigate={() => closeMenuUnlessLeaving('/cart')} />
             <button
               aria-controls="mobile-navigation"
               aria-expanded={menuOpen}
@@ -233,14 +262,14 @@ export function EPKPage() {
               <ul className="flex flex-col">
                 {navItems.map((item) => (
                   <li className="border-b border-brand-secondary/10 last:border-b-0" key={item}>
-                    {renderNavItem(item, `block py-3 font-script text-[46px] leading-tight ${mobileNavLinkClassName}`, closeMenu)}
+                    {renderNavItem(item, `block py-3 font-script text-[46px] leading-tight ${mobileNavLinkClassName}`, closeMenuUnlessLeaving)}
                   </li>
                 ))}
               </ul>
             </nav>
             {epk.branding.navCta && (
               <div className="mt-6">
-                <CtaButton cta={epk.branding.navCta} fullWidth onClick={closeMenu} size="lg" />
+                <CtaButton cta={epk.branding.navCta} fullWidth onClick={() => closeMenuUnlessLeaving(epk.branding.navCta!.url)} size="lg" />
               </div>
             )}
             {socials.length > 0 && (
@@ -260,10 +289,13 @@ export function EPKPage() {
           </Sheet>
         </div>
       </header>
-      <div id="content">
-        <Outlet context={{ epk }} />
-      </div>
-      <SiteFooter epk={epk} navItems={navItems.map((item) => ({ key: item, label: navLabels[item], url: getExternalNavUrl(epk, item) ?? (item === 'contact' ? `mailto:${epk.contact.bookingEmail}` : navPaths[item]) }))} />
+      {/* Desktop only: below lg the menu covers the page during navigation, so pages just swap. */}
+      <PageTransition media={desktopNavQuery} order={pageOrder}>
+        <div id="content">
+          <Outlet context={{ epk }} />
+        </div>
+        <SiteFooter epk={epk} navItems={navItems.map((item) => ({ key: item, label: navLabels[item], url: getExternalNavUrl(epk, item) ?? (item === 'contact' ? `mailto:${epk.contact.bookingEmail}` : navPaths[item]) }))} />
+      </PageTransition>
     </main>
   )
 }
