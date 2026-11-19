@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { ShopItem } from '../../../content/schema'
+import { useEPKOutlet } from '../../../hooks/useEPKOutlet'
 import { addToCart } from '../../../store/cart'
-import { formatMoney, parsePrice } from '../../../utils/format'
+import { useStoreRegion } from '../../../store/region'
+import { formatMoney } from '../../../utils/format'
 import { hasSizes, productPath } from '../../../utils/products'
 
 type ProductCardProps = {
@@ -17,7 +19,9 @@ const actionClass = 'flex h-11 w-full items-center justify-center rounded-full b
 
 export function ProductCard({ product, variant = 'compact', addLabel = 'Add to cart', chooseSizeLabel = 'Choose size' }: ProductCardProps) {
   const [added, setAdded] = useState(false)
-  const price = formatMoney(parsePrice(product.price), product.currency)
+  const { epk } = useEPKOutlet()
+  const { currency, priceOf } = useStoreRegion(epk)
+  const price = formatMoney(priceOf(product), currency)
   const href = productPath(product)
 
   useEffect(() => {
@@ -54,7 +58,7 @@ export function ProductCard({ product, variant = 'compact', addLabel = 'Add to c
             <button
               className={`${actionClass} ${added ? 'bg-brand-secondary text-brand-accent' : 'hover:bg-brand-secondary hover:text-brand-accent'}`}
               onClick={() => {
-                addToCart({ productId: product.id, name: product.name, price: parsePrice(product.price), image: product.image })
+                addToCart({ productId: product.id, name: product.name, price: priceOf(product), image: product.image })
                 setAdded(true)
               }}
               type="button"

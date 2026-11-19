@@ -451,13 +451,15 @@ export const content = {
     externalStoreUrl: 'https://www.shopify.com',
     headline: 'Merch',
     redirectOnly: false,
-    // Products for /merch, /merch/<slug>, the home merch grid, and the cart. Prices are in `currency`.
+    // Products for /merch, /merch/<slug>, the home merch grid, and the cart. Prices are in `currency`;
+    // regionPrices holds each other store region's price (see store.regions).
     featuredItems: [
       {
         id: 'merch-sweater',
         name: 'Sweater',
         price: '55.00',
         currency: 'USD',
+        regionPrices: { uk: '45.00', eu: '52.00', au: '85.00' },
         description: 'A cozy knit sweater with a fair isle yoke, made for cold nights and long studio sessions. Please select your size carefully.',
         image: '/media/assets/merch/sweater.png',
         imageAlt: 'Grey knit sweater with a navy fair isle yoke',
@@ -473,6 +475,7 @@ export const content = {
         name: 'Vinyl',
         price: '30.00',
         currency: 'USD',
+        regionPrices: { uk: '25.00', eu: '28.00', au: '45.00' },
         description: 'This store exclusive vinyl is only available for a limited time. Featuring the following tracks:',
         descriptionList: [
           'Track 1', 'Track 2', 'Track 3', 'Track 4', 'Track 5', 'Track 6',
@@ -492,6 +495,7 @@ export const content = {
         name: 'T-Shirt',
         price: '25.00',
         currency: 'USD',
+        regionPrices: { uk: '20.00', eu: '23.00', au: '38.00' },
         description: 'A soft black cotton tee with a relaxed fit. Please select your size carefully.',
         image: '/media/assets/merch/t-shirt.png',
         imageAlt: 'Plain black t-shirt',
@@ -506,6 +510,7 @@ export const content = {
         name: 'Cat Sticker',
         price: '4.00',
         currency: 'USD',
+        regionPrices: { uk: '3.00', eu: '4.00', au: '6.00' },
         description: 'A glossy die-cut “miaw-miaw” cat sticker. Weatherproof, and just the right size for a laptop or water bottle.',
         image: '/media/assets/merch/cat-sticker.png',
         imageAlt: 'Die-cut sticker of a grey cat with the words miaw-miaw',
@@ -553,6 +558,58 @@ export const content = {
       shippingMethods: [
         { id: 'standard', label: 'Standard', detail: '5–7 business days', price: 5.99, freeOverThreshold: true },
         { id: 'express', label: 'Express', detail: '2–3 business days', price: 14.99 },
+      ],
+      // Regional storefronts. Visitors only see the store for their country (detected by Vercel);
+      // countries not listed get defaultRegion.
+      defaultRegion: 'us',
+      regions: [
+        {
+          id: 'us',
+          label: 'US',
+          name: 'United States',
+          currency: 'USD',
+          countries: ['US'],
+          note: 'US store · Prices in USD · Ships from Los Angeles in 3–5 days · Free shipping over $50',
+        },
+        {
+          id: 'uk',
+          label: 'UK',
+          name: 'United Kingdom',
+          currency: 'GBP',
+          countries: ['GB', 'IM', 'JE', 'GG'],
+          note: 'UK store · Prices in GBP · Ships from London in 2–4 days · Free UK shipping over £40',
+          freeShippingThreshold: 40,
+          shippingPrices: { standard: 3.99, express: 9.99 },
+          shippingPerk: { title: 'Ships in 2–4 days', text: 'Free UK shipping on orders over £40' },
+          shippingReturns: 'Orders ship from London in 2–4 business days. Standard shipping is free on orders over £40, and unworn items can be returned within 30 days.',
+        },
+        {
+          id: 'eu',
+          label: 'EU',
+          name: 'European Union',
+          currency: 'EUR',
+          countries: [
+            'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'GR', 'HU', 'IE',
+            'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+          ],
+          note: 'EU store · Prices in EUR · Ships from Amsterdam in 3–6 days · Free EU shipping over €50',
+          freeShippingThreshold: 50,
+          shippingPrices: { standard: 5.99, express: 14.99 },
+          shippingPerk: { title: 'Ships in 3–6 days', text: 'Free EU shipping on orders over €50' },
+          shippingReturns: 'Orders ship from Amsterdam in 3–6 business days. Standard shipping is free on orders over €50, and unworn items can be returned within 30 days.',
+        },
+        {
+          id: 'au',
+          label: 'AU',
+          name: 'Australia & New Zealand',
+          currency: 'AUD',
+          countries: ['AU', 'NZ'],
+          note: 'AU store · Prices in AUD · Ships from Melbourne in 3–7 days · Free AU shipping over A$80',
+          freeShippingThreshold: 80,
+          shippingPrices: { standard: 7.99, express: 19.99 },
+          shippingPerk: { title: 'Ships in 3–7 days', text: 'Free AU shipping on orders over A$80' },
+          shippingReturns: 'Orders ship from Melbourne in 3–7 business days. Standard shipping is free on orders over A$80, and unworn items can be returned within 30 days.',
+        },
       ],
       demoNotice: 'Demo store: no payment is taken and no details are collected.',
       cart: {

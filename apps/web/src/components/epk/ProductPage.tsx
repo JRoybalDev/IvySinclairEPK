@@ -2,7 +2,8 @@ import { useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { FiPlus } from 'react-icons/fi'
 import { useEPKOutlet } from '../../hooks/useEPKOutlet'
-import { formatMoney, parsePrice } from '../../utils/format'
+import { regionalStore, useStoreRegion } from '../../store/region'
+import { formatMoney } from '../../utils/format'
 import { findProduct, getProducts, hasSizes } from '../../utils/products'
 import { AddToCart } from './store/AddToCart'
 import { MiniCart } from './store/MiniCart'
@@ -37,7 +38,9 @@ export function ProductPage() {
   const { epk } = useEPKOutlet()
   const { slug } = useParams()
   const [miniCartOpen, setMiniCartOpen] = useState(false)
-  const store = epk.shop?.store
+  const { region, currency, priceOf } = useStoreRegion(epk)
+  const baseStore = epk.shop?.store
+  const store = baseStore && regionalStore(baseStore, region)
   const product = findProduct(epk, slug)
 
   if (!store || !product) {
@@ -70,9 +73,9 @@ export function ProductPage() {
               </ol>
             </nav>
             <h1 className="mt-4 text-[38px] leading-tight sm:text-[44px]">{product.name}</h1>
-            <p className="mt-2 text-[22px] tabular-nums">{formatMoney(parsePrice(product.price), product.currency)}</p>
+            <p className="mt-2 text-[22px] tabular-nums">{formatMoney(priceOf(product), currency)}</p>
             <div className="mt-6">
-              <AddToCart label={store.addToCartLabel} onAdded={() => setMiniCartOpen(true)} product={product} />
+              <AddToCart label={store.addToCartLabel} onAdded={() => setMiniCartOpen(true)} price={priceOf(product)} product={product} />
             </div>
             {product.description && <p className="mt-8 text-[15px] leading-relaxed">{product.description}</p>}
             {product.descriptionList && product.descriptionList.length > 0 && (
@@ -125,7 +128,7 @@ export function ProductPage() {
         </section>
       )}
 
-      <MiniCart currency={product.currency} onClose={() => setMiniCartOpen(false)} open={miniCartOpen} store={store} />
+      <MiniCart currency={currency} onClose={() => setMiniCartOpen(false)} open={miniCartOpen} store={store} />
     </div>
   )
 }

@@ -23,7 +23,6 @@ export function ConfirmationPage() {
   if (!store) return <StoreUnavailable />
 
   const copy = store.confirmation
-  const currency = storeCurrency(epk)
 
   if (!lastOrder) {
     return (
@@ -35,6 +34,7 @@ export function ConfirmationPage() {
     )
   }
 
+  const currency = lastOrder.currency ?? storeCurrency(epk)
   const [minDays, maxDays] = copy.deliveryWindowDays
   const delivery = `${dayFormat.format(addDays(lastOrder.placedAt, minDays))} – ${dayFormat.format(addDays(lastOrder.placedAt, maxDays))}`
   const info = [

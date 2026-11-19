@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useEPKOutlet } from '../../hooks/useEPKOutlet'
 import { getTotals, placeOrder, useCart } from '../../store/cart'
-import { storeCurrency } from '../../utils/products'
+import { regionalStore, useStoreRegion } from '../../store/region'
 import { CartLines } from './store/CartLines'
 import { CheckoutSteps } from './store/CheckoutSteps'
 import { DeliveryOptions } from './store/DeliveryOptions'
@@ -14,15 +14,16 @@ export function CheckoutPage() {
   const { epk } = useEPKOutlet()
   const cart = useCart()
   const navigate = useNavigate()
-  const store = epk.shop?.store
-  if (!store) return <StoreUnavailable />
+  const { region, currency } = useStoreRegion(epk)
+  const baseStore = epk.shop?.store
+  if (!baseStore) return <StoreUnavailable />
 
-  const currency = storeCurrency(epk)
+  const store = regionalStore(baseStore, region)
   const totals = getTotals(cart.items, store, cart.methodId)
   const { checkout } = store
 
   const onPlaceOrder = () => {
-    if (placeOrder(store)) navigate('/confirmation')
+    if (placeOrder(store, currency)) navigate('/confirmation')
   }
 
   return (

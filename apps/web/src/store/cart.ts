@@ -16,6 +16,7 @@ export type CartItem = {
 
 export type Order = {
   id: string
+  currency?: string // missing on orders placed before store regions existed
   items: CartItem[]
   subtotal: number
   shipping: number
@@ -121,7 +122,23 @@ export const removeFromCart = (id: string) => {
   setState({ ...current, items: current.items.filter((line) => line.id !== id) })
 }
 
-export const setShippingMethod = (methodId: string) => setState({ ...getState(), methodId })
+/**
+ * Updates line prices after the store region changes, so the cart is always in one currency.
+ * `priceOf` returns a product's price in the current region. No-op when nothing changes.
+ */
+export const repriceCart = (priceOf: (productId: string) => number | undefined) => {
+  const current = getState()
+  let changed = false
+  const items = current.items.map((line) => {
+    const price = priceOf(line.productId)
+    if (price === undefined || price === line.price) return line
+    changed = true
+    return { ...line, price }
+  })
+  if (changed) setState({ ...current, items })
+}
+
+export const setShippingMethod =(methodId: string) => setState({ ...getState(), methodId })
 
 /** The selected shipping method, falling back to the first one. */
 export const getShippingMethod = (store: Store, methodId: string | null): ShippingMethod =>
@@ -141,12 +158,13 @@ export const getTotals = (items: CartItem[], store: Store, methodId: string | nu
 }
 
 /** Moves the cart into lastOrder and empties it. Returns the order, or null for an empty cart. */
-export const placeOrder = (store: Store): Order | null => {
+export const placeOrder = (store: Store, currency: string): Order | null => {
   const current = getState()
   if (current.items.length === 0) return null
   const { subtotal, count, shipping, total, method } = getTotals(current.items, store, current.methodId)
   const order: Order = {
     id: `IVY-${Math.floor(100000 + Math.random() * 900000)}`,
+    currency,
     items: current.items,
     subtotal,
     count,

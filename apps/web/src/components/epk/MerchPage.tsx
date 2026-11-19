@@ -1,5 +1,6 @@
 import { FiLock, FiRotateCcw, FiTruck } from 'react-icons/fi'
 import { useEPKOutlet } from '../../hooks/useEPKOutlet'
+import { regionalStore, useStoreRegion } from '../../store/region'
 import { getProducts } from '../../utils/products'
 import { ShopGrid } from './ShopGrid'
 import { ProductCard } from './store/ProductCard'
@@ -11,10 +12,13 @@ const perkIcons = { truck: FiTruck, returns: FiRotateCcw, lock: FiLock } as cons
 
 export function MerchPage() {
   const { epk } = useEPKOutlet()
-  const store = epk.shop?.store
+  const { region } = useStoreRegion(epk)
+  const baseStore = epk.shop?.store
 
   // No on-site store configured: keep the simple external-links shop.
-  if (!store || epk.shop?.redirectOnly) return <ShopGrid />
+  if (!baseStore || epk.shop?.redirectOnly) return <ShopGrid />
+
+  const store = regionalStore(baseStore, region)
 
   const products = getProducts(epk)
 
@@ -38,6 +42,7 @@ export function MerchPage() {
       )}
 
       <section aria-label="Products" className="mt-12">
+        {region.note && <p className="mb-8 text-center text-sm text-balance text-brand-primary-dark">{region.note}</p>}
         <ul className="grid grid-cols-1 gap-5 min-[480px]:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => (
             <li key={product.id}>

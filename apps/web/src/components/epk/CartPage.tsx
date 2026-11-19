@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useEPKOutlet } from '../../hooks/useEPKOutlet'
 import { getTotals, useCart } from '../../store/cart'
-import { getProducts, storeCurrency } from '../../utils/products'
+import { regionalStore, useStoreRegion } from '../../store/region'
+import { getProducts } from '../../utils/products'
 import { CartLines } from './store/CartLines'
 import { CheckoutSteps } from './store/CheckoutSteps'
 import { FreeShippingBar } from './store/FreeShippingBar'
@@ -12,10 +13,11 @@ import { StoreUnavailable } from './store/StoreUnavailable'
 export function CartPage() {
   const { epk } = useEPKOutlet()
   const cart = useCart()
-  const store = epk.shop?.store
-  if (!store) return <StoreUnavailable />
+  const { region, currency } = useStoreRegion(epk)
+  const baseStore = epk.shop?.store
+  if (!baseStore) return <StoreUnavailable />
 
-  const currency = storeCurrency(epk)
+  const store = regionalStore(baseStore, region)
   const { subtotal, count } = getTotals(cart.items, store, cart.methodId)
   const freeShipping = store.freeShippingThreshold > 0 && subtotal >= store.freeShippingThreshold
   const inCart = new Set(cart.items.map((item) => item.productId))

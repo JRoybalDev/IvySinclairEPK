@@ -434,6 +434,9 @@ export const ShopItemSchema = z.object({
     name: z.string(),
     price: z.string(),
     currency: z.string().default('USD'),
+    // Prices for other store regions, keyed by region id (shop.store.regions), e.g. { uk: '45.00' }.
+    // A region whose currency matches `currency` falls back to `price`.
+    regionPrices: z.record(z.string(), z.string()).optional(),
     description: z.string().optional(),
     image: z.string().optional(),
     purchaseUrl: UrlString.optional(),
@@ -457,6 +460,20 @@ export const ShippingMethodSchema = z.object({
     detail: z.string(),
     price: z.number(),
     freeOverThreshold: z.boolean().default(false), // free when the subtotal reaches freeShippingThreshold
+})
+// A regional storefront (e.g. US, UK, EU, AU). Visitors only see the store for their own
+// country, detected from their IP on Vercel (browser language as a fallback).
+export const StoreRegionSchema = z.object({
+    id: z.string(), // e.g. "uk"; also the key in each product's regionPrices
+    label: z.string(), // short label, e.g. "UK"
+    name: z.string(), // e.g. "United Kingdom"
+    currency: z.string(), // ISO 4217, e.g. "GBP"
+    countries: z.array(z.string().regex(/^[A-Z]{2}$/, 'Use ISO 3166-1 alpha-2 codes, e.g. "GB"')).default([]),
+    note: z.string().optional(), // line above the products, e.g. "Prices in GBP · Ships from London"
+    freeShippingThreshold: z.number().optional(), // overrides the store's, in this region's currency
+    shippingPrices: z.record(z.string(), z.number()).optional(), // shipping method id → price in this currency
+    shippingPerk: z.object({ title: z.string(), text: z.string() }).optional(), // replaces the "truck" perk
+    shippingReturns: z.string().optional(), // replaces product.shippingReturns
 })
 // The on-site demo store (cart, checkout, confirmation). No payment is taken and no details are collected.
 export const StoreSchema = z.object({
@@ -483,6 +500,9 @@ export const StoreSchema = z.object({
     }),
     freeShippingThreshold: z.number().default(0), // 0 turns the free-shipping bar off
     shippingMethods: z.array(ShippingMethodSchema).min(1),
+    // Regional storefronts. Empty means one store priced in the products' own currency.
+    regions: z.array(StoreRegionSchema).default([]),
+    defaultRegion: z.string().optional(), // region for countries no region lists; defaults to the first region
     demoNotice: z.string(),
     steps: z.tuple([z.string(), z.string(), z.string()]).default(['Cart', 'Checkout', 'Confirmation']),
     cart: z.object({
@@ -536,6 +556,24 @@ export const ShopSchema = z.object({
     // If true, /shop just redirects to externalStoreUrl immediately.
     redirectOnly: z.boolean().default(true),
     store: StoreSchema.optional(), // on-site demo store at /merch; without it, /merch lists featuredItems with Buy links
+}).superRefine((shop, ctx) => {
+    const regions = shop.store?.regions ?? []
+    if (regions.length === 0) return
+    const ids = new Set(regions.map((region) => region.id))
+    if (ids.size !== regions.length) {
+        ctx.addIssue({ code: 'custom', path: ['store', 'regions'], message: 'Region ids must be unique' })
+    }
+    if (shop.store?.defaultRegion && !ids.has(shop.store.defaultRegion)) {
+        ctx.addIssue({ code: 'custom', path: ['store', 'defaultRegion'], message: `No region with id "${shop.store.defaultRegion}"` })
+    }
+    // Every store product needs a price in every region's currency.
+    shop.featuredItems?.forEach((item, index) => {
+        if (!item.isFeatured) return
+        for (const region of regions) {
+            if (item.regionPrices?.[region.id] || region.currency === item.currency) continue
+            ctx.addIssue({ code: 'custom', path: ['featuredItems', index, 'regionPrices', region.id], message: `Missing ${region.currency} price for region "${region.id}"` })
+        }
+    })
 })
 
 // ─── About ────────────────────────────────────────────────
@@ -771,6 +809,7 @@ export type PlatformLink = z.infer<typeof PlatformLinkSchema>
 export type Signup = z.infer<typeof SignupSchema>
 export type Store = z.infer<typeof StoreSchema>
 export type ShippingMethod = z.infer<typeof ShippingMethodSchema>
+export type StoreRegion = z.infer<typeof StoreRegionSchema>
 export type MusicSpotlight = z.infer<typeof MusicSpotlightSchema>
 
 // The shape you write in epk.ts, before schema defaults are applied.

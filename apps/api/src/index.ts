@@ -21,6 +21,17 @@ app.use('*', cors({ origin: allowedOrigins.length > 0 ? allowedOrigins : '*' }))
 
 app.get('/api/health', (c) => c.json({ status: 'ok', timestamp: new Date().toISOString() }))
 
+// The visitor's country, used to pick their merch store region. Vercel sets this header from
+// the request IP; it's absent locally, where the web app falls back to the browser language.
+// Only the two-letter code is returned and nothing is stored.
+app.get('/api/geo', (c) => {
+  const header = c.req.header('x-vercel-ip-country')?.toUpperCase()
+  const country = header && /^[A-Z]{2}$/.test(header) ? header : null
+  c.header('Cache-Control', 'private, no-store')
+  c.header('Vary', 'x-vercel-ip-country')
+  return c.json({ country })
+})
+
 app.route('/api/integrations', integrations)
 
 app.notFound((c) => c.json({ error: 'Not found' }, 404))

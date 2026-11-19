@@ -103,6 +103,11 @@ function epkSeo(): Plugin {
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), epkSeo()],
+  define: {
+    // Allows /merch?country=GB to test store regions in local dev and Vercel preview deploys.
+    // Off in production builds, where visitors only get the store for their real country.
+    'import.meta.env.VITE_ALLOW_COUNTRY_OVERRIDE': JSON.stringify(process.env.VERCEL_ENV !== 'production'),
+  },
   server: {
     proxy: {
       '/api': 'http://localhost:3001',

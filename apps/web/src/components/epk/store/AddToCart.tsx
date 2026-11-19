@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react'
 import type { ShopItem } from '../../../content/schema'
 import { addToCart } from '../../../store/cart'
-import { parsePrice } from '../../../utils/format'
 import { hasSizes } from '../../../utils/products'
 import { Stepper } from './Stepper'
 
 type AddToCartProps = {
   product: ShopItem
+  /** Unit price in the visitor's store region. */
+  price: number
   label: string
   onAdded?: () => void
 }
 
 /** Size picker, quantity stepper and Add to Cart button for the product page. */
-export function AddToCart({ product, label, onAdded }: AddToCartProps) {
+export function AddToCart({ product, price, label, onAdded }: AddToCartProps) {
   const sizes = product.sizes ?? []
   const [size, setSize] = useState<string | null>(null)
   const [qty, setQty] = useState(1)
@@ -31,7 +32,7 @@ export function AddToCart({ product, label, onAdded }: AddToCartProps) {
       return
     }
     addToCart(
-      { productId: product.id, name: product.name, price: parsePrice(product.price), image: product.image, size: size ?? undefined },
+      { productId: product.id, name: product.name, price, image: product.image, size: size ?? undefined },
       qty,
     )
     setError(false)
